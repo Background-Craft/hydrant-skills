@@ -1,7 +1,8 @@
 #!/usr/bin/env node
-// Walk every **/SKILL.md file in the repo and validate its YAML frontmatter.
-// Fails fast (non-zero exit) on the first set of problems found, after reporting
-// every failure. Run from the repo root: `node scripts/validate-frontmatter.mjs`.
+// Walk every **/SKILL.md file under the current working directory and validate
+// its YAML frontmatter. Reports every problem found, then exits non-zero if any
+// were found and zero otherwise. Run from the repo root:
+//   node scripts/validate-frontmatter.mjs
 
 import { readFile, readdir } from "node:fs/promises";
 import { relative, sep } from "node:path";

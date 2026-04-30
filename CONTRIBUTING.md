@@ -1,12 +1,12 @@
 # Contributing
 
-Thanks for your interest in `hydrant-skills`. This is a small, deliberately scoped catalogue — pull requests, new skill proposals, and bug reports are all welcome.
+Pull requests, new skill proposals, and bug reports are all welcome.
 
 ## Scope
 
 Skills in this repo are **stack-agnostic** and drive Hydrant exclusively through the [hosted MCP server](https://hydrant.dev/mcp). If a skill assumes a specific framework, build system, or directory layout, it doesn't belong here.
 
-We don't sync from any private source. The Hydrant team's internal skills (which assume Hydrant's own Next.js + Convex + WorkOS stack) are a separate catalogue with a different audience. Drift between the two is intentional. If you've seen a skill in Hydrant's private repo that you think should live here too, file an issue describing the use case — don't wait on a sync that isn't coming.
+The Hydrant team's internal skills are a separate, private catalogue — they assume Hydrant's own stack and are not the source of truth for anything in this repo. The two evolve independently. If you've seen a skill on the private side that you think should live here too, open an issue describing the use case.
 
 ## Layout
 
@@ -72,8 +72,8 @@ Open an issue with:
 
 ## Code of conduct
 
-Be kind, be specific, assume good intent. Issues and PRs that violate that spirit may be closed without comment. We don't have a formal CoC document yet; the [Contributor Covenant](https://www.contributor-covenant.org/version/2/1/code_of_conduct/) is a reasonable proxy in the meantime.
+Be kind, be specific, assume good intent. The [Contributor Covenant](https://www.contributor-covenant.org/version/2/1/code_of_conduct/) is the working CoC for this repo until a project-specific one is in place.
 
 ## License
 
-By contributing, you agree your work is licensed under the [MIT License](./LICENSE) the same as the rest of this project.
+By contributing, you agree your work is licensed under the [MIT License](./LICENSE), the same as the rest of this project.

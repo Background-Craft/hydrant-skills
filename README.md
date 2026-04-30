@@ -1,8 +1,8 @@
 # hydrant-skills
 
-A public, MIT-licensed toolkit of agent skills that bring the Hydrant ticket lifecycle — **shape → ship** — into any codebase.
+Agent skills that bring the Hydrant ticket lifecycle — **shape → ship** — into any codebase.
 
-Install once, then drive issue creation, refinement, implementation readiness, guided builds, pre-PR review, and ship/cleanup from your AI harness via slash commands. The skills talk to Hydrant exclusively through the [hosted MCP server](https://hydrant.dev/mcp), so they make zero assumptions about your stack, build system, or branch strategy.
+Install once, then drive every step of an issue's life — create, refine, prep, build, review, ship — from your AI harness via slash commands. Skills talk to Hydrant exclusively through the [hosted MCP server](https://hydrant.dev/mcp) and make no assumptions about your stack, build system, or branch strategy.
 
 ## Install
 
@@ -10,9 +10,9 @@ Install once, then drive issue creation, refinement, implementation readiness, g
 npx skills add Background-Craft/hydrant-skills
 ```
 
-This uses [`vercel-labs/skills`](https://github.com/vercel-labs/skills), which detects your harness (Claude Code, Cursor, Codex, OpenCode, Gemini CLI, and 35+ others) and installs to the right directory.
+This uses [`vercel-labs/skills`](https://github.com/vercel-labs/skills), which detects your harness and installs to the right directory.
 
-After install, run `/setup` once to wire up the Hydrant MCP server and append a "Hydrant lifecycle workflow" section to your `AGENTS.md`. Then optionally run `/align` to teach the skills your codebase's conventions (test command, branch strategy, PR flow).
+After install, run `/setup` once to configure the Hydrant MCP server and append a *Hydrant lifecycle workflow* section to your `AGENTS.md`. Optionally run `/align` to teach the skills your codebase's conventions — test command, branch strategy, PR flow.
 
 ## What's inside
 
@@ -26,8 +26,8 @@ The day-to-day commands you'll invoke from your harness:
 | `/refine` | Analyze an existing issue, surface gaps, update it |
 | `/nail` | Tighten ambiguity, ground references against your codebase, extract metadata into proper fields |
 | `/prep` | Assess implementation readiness, surface clarifying questions before starting |
-| `/go` | Guided implementation: fetch context, create a branch, plan, build |
-| `/preflight` | Pre-PR mechanical checks, adversarial review, quality scoring |
+| `/go` | Guided implementation — fetch context, create a branch, plan, build |
+| `/preflight` | Run pre-PR mechanical checks, adversarial review, and quality scoring |
 | `/yeet` | Ship pipeline — detect commit/push/PR/merge state, pick up from there |
 | `/cleanup` | Post-merge sync, prune branches |
 
@@ -44,14 +44,14 @@ The lifecycle skills tolerate a missing or partial Alignment section — `/align
 
 ## Who this is for
 
-Developers who want a structured, MCP-driven ticket lifecycle in their day-to-day codebase, regardless of stack. If you use Hydrant as your issue tracker and want your AI agent to drive issues through `shape → ship` consistently, this toolkit gives you the slash commands to do it.
+You use Hydrant as your issue tracker and want your AI harness to drive issues through `shape → ship` the same way every time, regardless of stack.
 
-This is **not** the Hydrant team's internal skills catalogue — those live in Hydrant's private repo and assume Hydrant's own stack. These public skills are stack-agnostic and authored fresh. Drift between the two is intentional; each catalogue serves its audience.
+This is not the Hydrant team's internal skills catalogue — those live in a private repo and assume Hydrant's own stack. The two are written separately by design; each serves its audience.
 
 ## Requirements
 
-- A Hydrant account and a [personal access token](https://hydrant.dev/settings/tokens) (`/setup` walks you through getting one)
-- An AI harness with MCP support (Claude Code, Cursor, Codex, etc. — 41+ supported by the upstream installer). Harnesses without MCP can still call the Hydrant REST API; `/setup` falls back to printing manual instructions.
+- A Hydrant account and a [personal access token](https://hydrant.dev/settings/tokens). `/setup` walks you through getting one.
+- An AI harness — Claude Code, Cursor, Codex, OpenCode, Gemini CLI, or any of the 41+ supported by the [upstream installer](https://github.com/vercel-labs/skills). Harnesses without MCP can still call the Hydrant REST API; `/setup` prints manual instructions in that case.
 
 ## Contributing
 
