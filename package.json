@@ -1,0 +1,21 @@
+{
+  "name": "hydrant-skills",
+  "private": true,
+  "version": "0.0.0",
+  "description": "Public catalogue of agent skills for the Hydrant ticket lifecycle.",
+  "license": "MIT",
+  "homepage": "https://github.com/Background-Craft/hydrant-skills",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Background-Craft/hydrant-skills.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Background-Craft/hydrant-skills/issues"
+  },
+  "scripts": {
+    "validate": "node scripts/validate-frontmatter.mjs"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
