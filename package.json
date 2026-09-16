@@ -1,8 +1,8 @@
 {
   "name": "hydrant-skills",
   "private": true,
-  "version": "0.0.0",
-  "description": "Agent skills that drive the Hydrant ticket lifecycle from your AI harness.",
+  "version": "0.1.0",
+  "description": "The hydrant skill: how an agent should behave inside a Hydrant workspace.",
   "license": "MIT",
   "homepage": "https://github.com/Background-Craft/hydrant-skills",
   "repository": {
