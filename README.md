@@ -12,7 +12,7 @@ Read it: [skills/hydrant/SKILL.md](./skills/hydrant/SKILL.md).
 npx skills add Background-Craft/hydrant-skills
 ```
 
-That is the whole installer. It uses the [skills CLI](https://github.com/vercel-labs/skills), detects the agents you have, and writes one directory. No hooks, no shell scripts, no edits to your instructions files.
+That is the whole installer. It uses the [skills CLI](https://github.com/vercel-labs/skills), detects the agents you have, and writes a skill directory, an optional symlink and a lockfile. Nothing else. No hooks, no shell scripts, no edits to your instructions files.
 
 - `-g` installs for your user instead of this project.
 - `-a claude-code` picks one agent. Repeat `-a` for more.
@@ -52,7 +52,7 @@ The skill assumes a connection already exists. Keys are created in Hydrant under
 
 Endpoint: `https://hydrant.dev/api/mcp`, Streamable HTTP, `Authorization: Bearer <key>`.
 
-Claude Code, project scope, key supplied through the environment rather than typed into a config file:
+Claude Code, project scope, in `.mcp.json`, with the key supplied through the environment rather than typed into the file:
 
 ```json
 {
@@ -100,7 +100,7 @@ Keep client approvals on. Hydrant's write tools declare their side effects; the 
 |---|---|
 | 0.1.0 | `hydrant` 0.1.0 |
 
-Requires `get_workspace`, `list_issues`, `get_issue`, `list_activity`, `get_dependencies`, `list_relationships`, `create_issue`, `update_issue` and `add_comment`. Treats `batch` and the task-context tools as optional.
+Requires `get_workspace`, `list_issues`, `get_issue`, `list_activity`, `get_dependencies`, `list_relationships`, `create_issue`, `update_issue` and `add_comment`; uses `get_project` and `inspect_project` for project membership. Treats `batch` and the task-context tools as optional.
 
 The server reports its name and version when a client connects. Releases are git tags; see [CHANGELOG.md](./CHANGELOG.md).
 
