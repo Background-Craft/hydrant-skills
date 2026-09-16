@@ -22,11 +22,9 @@ That is the whole installer. It uses the [skills CLI](https://github.com/vercel-
 
 Project install with Claude Code and Codex both selected:
 
-| Path | What it is |
-|---|---|
-| `.agents/skills/hydrant/` | the skill itself; Codex and other `.agents`-aware clients read it here |
-| `.claude/skills/hydrant` | symlink to the directory above, for Claude Code |
-| `skills-lock.json` | source, path and content hash, so a later `npx skills update` knows what it installed |
+- `.agents/skills/hydrant/`: the skill itself. Codex and other `.agents`-aware clients read it here.
+- `.claude/skills/hydrant`: a symlink to that directory, for Claude Code.
+- `skills-lock.json`: source, path and content hash, so a later `npx skills update` knows what it installed.
 
 With a single agent selected, the CLI copies the skill straight into that agent's directory (`.claude/skills/hydrant/` for Claude Code, `.agents/skills/hydrant/` for Codex) and skips the symlink. Either way that directory and the lockfile are the only changes. Installing a skill does not connect a client, create a key or authorize anything.
 

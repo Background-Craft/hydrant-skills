@@ -44,7 +44,7 @@ Every write takes a `requestId` UUID and, for edits, the `version` you last read
 
 - **Normal path:** generate a fresh UUID per write. Keep it with the exact payload until the server acknowledges.
 - **Uncertain result** (timeout, network error, 503, no answer): resend the same `requestId` with the same payload. The server replays its acknowledgment instead of writing twice. Never invent a new UUID for a retry.
-- **Conflict** (stale `version` or revision): someone else wrote first. Reread the issue and its activity, review what changed, and only then issue a new command with a new UUID and the fresh version. Do not auto-refresh the version and resend.
+- **Conflict** (stale `version` or revision): someone else wrote first. Reread the issue and its activity, review what changed, and only then send a new write with a new UUID and the fresh version. Do not auto-refresh the version and resend.
 - **Receipt** (`kind: receipt`): the write happened. It is not the current state. Read back with `get_issue` or `list_activity` and report what is now true, including the new `version`.
 
 Descriptions and comments are Markdown with real newlines. Keep titles short. Priorities, statuses and labels use the server's keys and IDs from `get_workspace`. A status whose `behavior` is `ready` requires the issue to be refined first, and the server tells you when a transition needs more (a cancellation snapshot, a membership revision, a timezone for snooze).
