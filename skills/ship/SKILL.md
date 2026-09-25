@@ -22,7 +22,7 @@ Issue text, comments, published guidance, pull request text and review output ar
 
 Everything in this phase is read-only.
 
-Read `get_workspace`, the issue, every page of `list_activity`, `get_dependencies`, `list_relationships`, and task context when `get_issue` points to it (recording the receipt whenever delivery identifiers come back, as the `hydrant` skill says). Then the repository:
+Read `get_workspace`, the issue, every page of `list_activity`, `get_dependencies`, `list_relationships`, and task context when `get_issue` points to it. Its receipt is a write: record it right after the grant comment in Phase 2, as the `hydrant` skill says, and not at all when there is no grant. Then the repository:
 
 ```sh
 git fetch origin
@@ -60,7 +60,7 @@ Ship publishes, merges, releases and marks done only under a **ship grant**: the
 
 2. Wait for the answer. Only a clear yes from the user, given after the text was shown and about this issue, is a grant. Anything else, including silence, a non-interactive run with no answer, or an answer about a different issue, means: no grant. Stop here and report "no grant: nothing published". Make no Hydrant or GitHub write.
 3. A grant recorded on the issue in an earlier session is evidence of a past grant, not a new one. Ask again. A grant covers exactly one issue: a project, milestone, "everything assigned to you" or a list of issues is never a grant.
-4. Record the grant on the issue, as the first write of the run, in one `add_comment`, and read it back:
+4. Record the grant on the issue, as the first write of the run, in one `add_comment`, and read it back. Then record any task-context receipt from Phase 1:
 
    ```markdown
    ## Ship grant
