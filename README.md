@@ -11,7 +11,7 @@ Hydrant already hands agents its tools over MCP. Tools describe what an agent *c
 - [`prep`](./skills/prep/SKILL.md): confirms the assignment, reads the issue and the code it touches, maps each acceptance check to a command from your profile, and records a checkpoint on the issue. Edits nothing.
 - [`go`](./skills/go/SKILL.md): builds the issue on its own branch, runs your profile's checks, preflights the result and hands it to review. Commits locally; pushes and opens a pull request only when you ask. Never merges.
 
-**Review costs nothing extra.** Before handing off, `go` gets one independent review of its change from a fresh reviewer on the agent you already use: a read-only subagent where your client has one (Claude Code does), otherwise a second read-only session of the same CLI (`claude -p` or `codex exec -s read-only`). No review bot or paid service is needed. If you already use one, `go` leaves it to review the pull request as usual. If no independent reviewer can run, `go` says so instead of passing off its own review as independent.
+**Review costs nothing extra.** Before handing off, `go` gets one independent review of its change from a fresh reviewer on the agent you already use: a subagent where your client has one (Claude Code and Codex both do), otherwise a second session of the same CLI with editing turned off (`claude -p` with edit tools disallowed, or `codex exec -s read-only`). No review bot or paid service is needed. If you already use one, `go` leaves it to review the pull request as usual. If no independent reviewer can run, `go` says so instead of passing off its own review as independent.
 
 ## Install
 
