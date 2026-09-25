@@ -6,6 +6,8 @@ Hydrant already hands agents its tools over MCP. Tools describe what an agent *c
 
 - [`hydrant`](./skills/hydrant/SKILL.md): the base every other skill relies on.
 - [`hydrant-setup`](./skills/hydrant-setup/SKILL.md): scans your repository, installs the rest without overwriting your own skills, and writes the repository profile.
+- [`capture`](./skills/capture/SKILL.md): files a new issue from a request, idea or bug report, after checking for duplicates.
+- [`refine`](./skills/refine/SKILL.md): settles scope, acceptance, priority, size, owner, labels and project, and marks the issue Ready only when nothing material is open.
 
 ## Install
 
