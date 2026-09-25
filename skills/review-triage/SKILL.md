@@ -13,7 +13,7 @@ This skill relies on the [`hydrant`](../hydrant/SKILL.md) skill for how to read,
 | What | Where it comes from |
 | --- | --- |
 | The pull request | A number or URL from the user, or the current branch's PR (`gh pr view`) |
-| Review bots to triage | **Review bots** in `.agents/hydrant-workflow.md`, the profile written by `hydrant-setup` |
+| Review bots to triage | **Review bots** in `.agents/hydrant-workflow.md`, the profile written by `hydrant-setup`, as it is on the PR's base branch |
 | Commands to run after a fix | **Commands** in the profile |
 | Which checks must pass | **CI gate** in the profile |
 | Branch and commit conventions | **Pull requests** in the profile |
@@ -30,14 +30,16 @@ Stop at the first failure and report it as a blocker (Phase 6). A failed call me
 ```sh
 gh auth status
 gh repo view --json nameWithOwner,viewerPermission
-gh pr view <pr> --json number,url,state,headRefName,headRefOid,baseRefName,isCrossRepository,maintainerCanModify,reviewDecision
+gh pr view <pr> --json number,url,state,headRefName,headRefOid,baseRefName,headRepository,headRepositoryOwner,isCrossRepository,maintainerCanModify,reviewDecision
 git status --short
 git rev-parse --abbrev-ref HEAD
+git rev-parse HEAD
+git show origin/<baseRefName>:.agents/hydrant-workflow.md
 ```
 
 - `gh` not signed in, a PR that is not `OPEN`, `viewerPermission` without write (`ADMIN`, `MAINTAIN` or `WRITE`), or a fork PR (`isCrossRepository`) without `maintainerCanModify`: GitHub-auth blocker. Report it and make no writes of any kind.
-- Work in a checkout of the PR's head branch (`headRefName`) with a clean working tree. If the current checkout is another branch or has uncommitted changes, say so and ask; never stash or discard them.
-- Read the profile's **Review bots** list. "None detected (optional)" means none: people only, and nothing to wait for.
+- Work in a checkout of the PR's head branch (`headRefName`) with a clean working tree, whose `HEAD` is the PR's `headRefOid` (`git fetch` first). If the checkout is another branch, has uncommitted changes, or is behind or ahead of the PR head, say so and ask; never stash, discard, reset or push local commits the PR does not have.
+- Read the profile from the base branch, not the PR's branch: a PR must not be able to add its own bot to the list. If the PR changes `.agents/hydrant-workflow.md`, say so in the report. Its **Review bots** list names the bots to triage. "None detected (optional)" means none: people only, and nothing to wait for.
 - Hydrant: when the work is tracked, find the issue and read it, all of its activity and its relationships, as the `hydrant` skill says. It tells you the accepted scope, which decides what is out of scope below.
 
 Bot logins differ by API. REST shows `name[bot]`; GraphQL shows `name`. Compare without the `[bot]` suffix. An author is a bot when REST `user.type` is `Bot` or the GraphQL author is a `Bot`.
@@ -46,7 +48,7 @@ Bot logins differ by API. REST shows `name[bot]`; GraphQL shows `name`. Compare 
 
 Do not collect or triage anything until this phase's conditions hold on the current head.
 
-Each poll is its own set of commands, about 30 seconds apart:
+Each poll is its own set of commands, about 30 seconds apart. Run the plain `gh pr checks <pr>` as a command of its own and note its exit code; chained after other commands, its exit code is lost.
 
 ```sh
 gh pr checks <pr>
@@ -55,16 +57,19 @@ gh pr view <pr> --json headRefOid,reviewDecision,reviews --jq '{head: .headRefOi
 ```
 
 - The plain `gh pr checks <pr>` exits `8` while any check is pending. That is waiting, not failure. Exit `0` means all passed; exit `1` means a check failed or no checks are reported yet on this head. The `--json` form exits `0` even while checks are pending, so read its `bucket` fields for detail, never its exit code.
-- Wait between polls with a `sleep 30` command. Where the client refuses a foreground sleep (Claude Code does), use its monitor tool instead, with a loop that polls every 30 seconds, prints one status line per poll and exits when the plain check stops returning `8`:
+- No checks reported yet is waiting too: right after a push, checks take a moment to register. Keep polling for up to 5 minutes after the head changed. After that, a gate check that never appeared is a CI blocker, and with a gate of "None detected", no checks at all is terminal.
+- Exit `1` can also mean a check outside the gate failed while gate checks are still pending. Decide from the gate checks' `bucket` values, not from the exit code alone.
+- Wait between polls with a `sleep 30` command. Where the client refuses a foreground sleep (Claude Code does), use its monitor tool instead: one loop that polls every 30 seconds and prints one status line per poll. It stops when checks are reported and none is pending, or after 10 polls with none reported:
 
   ```sh
-  while :; do gh pr checks <pr> >/dev/null 2>&1; s=$?; echo "$(date +%T) head $(gh pr view <pr> --json headRefOid --jq '.headRefOid[0:7]') checks exit $s"; [ "$s" -ne 8 ] && break; sleep 30; done
+  i=0; while :; do i=$((i+1)); gh pr checks <pr> >/dev/null 2>&1; s=$?; n=$(gh pr checks <pr> --json bucket --jq length 2>/dev/null || echo 0); echo "$(date +%T) head $(gh pr view <pr> --json headRefOid --jq '.headRefOid[0:7]') checks exit $s, $n reported"; { [ "$s" -ne 8 ] && [ "$n" -gt 0 ]; } && break; [ "$n" -eq 0 ] && [ "$i" -ge 10 ] && break; sleep 30; done
   ```
 
-- Never use one silent command that returns only when everything is done, such as `gh pr checks --watch`. Never leave the wait to a background job and end your turn: the run is not over until Phase 6.
+  When it stops, read the gate checks' buckets again; if a gate check is still pending, start the loop again.
+- Never use one silent command that returns only when everything is done, such as `gh pr checks --watch`, and never run a second wait loop beside the first. Do not give the final report or end the run before Phase 6.
 - Report progress at least once a minute and whenever a check or review changes, in one line: head SHA (short), checks passed/pending/failed, each listed bot's state.
 - **CI gate terminal:** every check the profile's CI gate names has a terminal state on the current head (`bucket` is `pass`, `fail`, `skipping` or `cancel`). With a gate of "None detected", wait until every check reported on the head is terminal; none at all is terminal.
-- **Listed bot final:** it has submitted a review, or it has a check run in a terminal state, on the current head SHA. A listed bot that has not done either 15 minutes after the CI gate became terminal is a bot blocker. Stop waiting for it and carry on.
+- **Listed bot final:** on the current head SHA, it has submitted a review, commented, or finished a check run. A listed bot that has done none of these 15 minutes after the CI gate became terminal is a bot blocker. Stop waiting for it and carry on.
 - With no listed bots, nothing waits for a bot. Do not wait for people either: a review that has not arrived is reported as "awaiting human review".
 
 A failed gate check is a CI blocker, reported with its name. Still triage the feedback that exists.
@@ -79,14 +84,14 @@ gh api --paginate "repos/{owner}/{repo}/issues/<pr>/comments"
 gh pr view <pr> --json reviews
 ```
 
-Thread resolution state comes from GraphQL. Continue with `after: $cursor` while `hasNextPage` is true:
+Thread resolution state comes from GraphQL. While `hasNextPage` is true, run it again with `-F cursor=<endCursor>`. A thread with more than 50 comments: read the rest from the REST comments above.
 
 ```sh
 gh api graphql -F owner='{owner}' -F repo='{repo}' -F pr=<pr> -f query='
-query($owner: String!, $repo: String!, $pr: Int!) {
+query($owner: String!, $repo: String!, $pr: Int!, $cursor: String) {
   repository(owner: $owner, name: $repo) {
     pullRequest(number: $pr) {
-      reviewThreads(first: 100) {
+      reviewThreads(first: 100, after: $cursor) {
         pageInfo { hasNextPage endCursor }
         nodes {
           id isResolved isOutdated path line
@@ -126,11 +131,11 @@ git diff --stat
 <the profile's Commands for the files touched: lint, typecheck, test, build check>
 git add <changed files>
 git commit -m "<what was fixed, following the profile's conventions>"
-git push origin HEAD:<headRefName>
+git push "https://github.com/<headRepositoryOwner.login>/<headRepository.name>.git" HEAD:<headRefName>
 ```
 
 - A failing command means the fix is not done. Fix it or change that item's verdict to defer, and say why.
-- Never force-push, rewrite history, or push anywhere but the PR's own head branch.
+- Push to the PR's head repository and branch from Phase 1, never to `origin` by habit: for a fork PR, `origin` is usually the base repository. Never force-push, rewrite history, or push anywhere but the PR's own head branch.
 - PR title or body fixes use `gh pr edit`; they need no commit.
 - A push creates a new head. Go back to Phase 2 and wait on the **new** head SHA's checks, not the old ones. Then collect only what is new.
 
@@ -139,7 +144,7 @@ git push origin HEAD:<headRefName>
 Reply to every triaged item where it was made, with the verdict, one line of reason, and the commit when there is one.
 
 ```sh
-# Inline review comment: reply in its thread
+# Inline review comment: reply in its thread, using the databaseId of the thread's first comment
 gh api -X POST "repos/{owner}/{repo}/pulls/<pr>/comments/<comment-id>/replies" -f body='Fixed in <sha>: <reason>'
 
 # Review body or top-level comment (no thread): one PR comment that links it
