@@ -2,10 +2,12 @@
 
 ## Unreleased
 
-- New `hydrant-setup` skill, installed first with `npx skills add Background-Craft/hydrant-skills -s hydrant-setup`. It scans the repository, lists the pack's skills from its source, installs each one with `-s` and explicit `-a` agents, keeps any same-named skill you already have unless you ask for a verified backup and replacement, and writes the repository profile `.agents/hydrant-workflow.md`. Reruns propose profile additions and offer pack skills you don't have yet; they never update installed skills.
+- New `hydrant-setup` skill, installed first with `npx skills add Background-Craft/hydrant-skills -s hydrant-setup -a claude-code -a codex`. It scans the repository, lists the pack's skills from its source, installs each one with `-s` and explicit `-a` agents, keeps any same-named skill you already have unless you ask for a verified backup and replacement, and writes the repository profile `.agents/hydrant-workflow.md`. Reruns propose profile additions and offer pack skills you don't have yet; they never update installed skills.
 - New `capture` and `refine` skills. They hold no repository facts: workspace policy (statuses, sizing, labels, projects) comes from `get_workspace` and the project tools, and `refine` reads commands, CI gate and "done" from `.agents/hydrant-workflow.md`, inventing none when the profile is missing. Both write only to Hydrant.
 - `hydrant-setup` detection: a protection 404 `Branch not protected` with no branch rules is recorded as "none", not "not readable" (a 403, any other 404, a failed rules call, no `gh` or no sign-in still are). Lockfiles from more than one manager make Install a question: the plan names each lockfile and proposes one manager with a reason, and the Install line lists the others.
 - README: setup-first install; a plain `-y` install of the whole source overwrites same-named skills.
+- README: the Install command pins `-a claude-code -a codex`, because an agent-run install without `-a` installs for every agent and replaces same-named skills in their folders. A Codex note: run the install from your own terminal and approve setup's escalation, since `workspace-write` protects `.agents/`.
+- `hydrant-setup` checks every install on disk instead of trusting the CLI's exit code, which is 0 even when nothing was written. On a denial or missing files it marks the skill failed, stops the remaining installs and prints the commands for the user to run. A denied profile write prints the whole profile to save by hand. A failed replace restores the backup. A rerun marks a failed skill installed once it passes the check.
 
 ## 0.1.0 — 2026-09-16
 

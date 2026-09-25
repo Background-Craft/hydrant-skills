@@ -12,10 +12,14 @@ Hydrant already hands agents its tools over MCP. Tools describe what an agent *c
 ## Install
 
 ```sh
-npx skills add Background-Craft/hydrant-skills -s hydrant-setup
+npx skills add Background-Craft/hydrant-skills -s hydrant-setup -a claude-code -a codex
 ```
 
-Then ask your agent to run `hydrant-setup`. Install it on its own with `-s`: a plain `npx skills add Background-Craft/hydrant-skills -y` overwrites any skill of yours with the same name, such as your own `refine`, without asking. Add `-a claude-code`, `-a codex` or both to keep the CLI from linking it into every agent folder it finds; setup always does this for the skills it installs.
+Drop the `-a` for the agent you don't use. Then ask your agent to run `hydrant-setup`.
+
+Keep `-s` and at least one `-a`. `-s` installs setup on its own: a plain `npx skills add Background-Craft/hydrant-skills -y` overwrites any skill of yours with the same name, such as your own `refine`, without asking. `-a` keeps the CLI to those agents' folders. When an agent runs the command without it, the CLI installs for every agent it supports, with no prompt, and replaces any same-named skill in their folders. Setup pins `-a` the same way for every skill it installs.
+
+**Codex:** its default `workspace-write` sandbox protects `.agents/`, so the install fails there. Run the command from your own terminal. When setup installs skills and writes `.agents/hydrant-workflow.md`, approve the escalation Codex asks for. If you don't, setup prints the commands and the profile for you to run and save yourself.
 
 Only want the base skill? `npx skills add Background-Craft/hydrant-skills -s hydrant`.
 
@@ -42,7 +46,7 @@ With a single agent selected, the CLI copies the skill straight into that agent'
 - **New skills** are installed one at a time with `-s <name>` and explicit `-a` agents, so nothing outside the folders it checked is touched.
 - **A skill you already have** with the same name stays as it is by default, and setup prints a short Hydrant section you can paste into it. It is replaced only if you say so, after a verified backup to `.agents/hydrant-setup-backup/<name>/`.
 - **The profile**, `.agents/hydrant-workflow.md`, holds this repository's facts: base branch, commands, CI gate, PR conventions, review bots, release steps, what "done" means and which skills were installed. It is yours to edit; the skills CLI never touches it. Statuses, acceptance and ship grants stay in your Hydrant workspace.
-- **Running it again** rescans and proposes additions to the profile, and offers any pack skill you don't have yet. It never rewrites your lines or updates installed skills, and writes nothing when nothing changed.
+- **Running it again** rescans and proposes additions to the profile, and offers any pack skill you don't have yet. It never rewrites your lines or updates installed skills. The one exception is a skill whose install failed: setup marks it installed once it is. It writes nothing when nothing changed.
 
 Setup does not edit AGENTS.md or CLAUDE.md, create keys, connect clients or write to Hydrant.
 
