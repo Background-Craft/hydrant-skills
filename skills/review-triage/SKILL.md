@@ -44,15 +44,24 @@ Bot logins differ by API. REST shows `name[bot]`; GraphQL shows `name`. Compare 
 
 ## Phase 2: Wait
 
-Poll as separate commands about every 30 seconds. Never hide the wait inside one long command or loop.
+Do not collect or triage anything until this phase's conditions hold on the current head.
+
+Each poll is its own set of commands, about 30 seconds apart:
 
 ```sh
-sleep 30
-gh pr view <pr> --json headRefOid,reviewDecision,reviews --jq '{head: .headRefOid, decision: .reviewDecision, reviews: [.reviews[] | {author: .author.login, state, commit: .commit.oid}]}'
+gh pr checks <pr>
 gh pr checks <pr> --json name,state,bucket,workflow
+gh pr view <pr> --json headRefOid,reviewDecision,reviews --jq '{head: .headRefOid, decision: .reviewDecision, reviews: [.reviews[] | {author: .author.login, state, commit: .commit.oid}]}'
 ```
 
-- `gh pr checks` exits `8` while checks are pending. That is waiting, not failure. Exit `1` with no checks reported means none exist yet on this head.
+- The plain `gh pr checks <pr>` exits `8` while any check is pending. That is waiting, not failure. Exit `0` means all passed; exit `1` means a check failed or no checks are reported yet on this head. The `--json` form exits `0` even while checks are pending, so read its `bucket` fields for detail, never its exit code.
+- Wait between polls with a `sleep 30` command. Where the client refuses a foreground sleep (Claude Code does), use its monitor tool instead, with a loop that polls every 30 seconds, prints one status line per poll and exits when the plain check stops returning `8`:
+
+  ```sh
+  while :; do gh pr checks <pr> >/dev/null 2>&1; s=$?; echo "$(date +%T) head $(gh pr view <pr> --json headRefOid --jq '.headRefOid[0:7]') checks exit $s"; [ "$s" -ne 8 ] && break; sleep 30; done
+  ```
+
+- Never use one silent command that returns only when everything is done, such as `gh pr checks --watch`. Never leave the wait to a background job and end your turn: the run is not over until Phase 6.
 - Report progress at least once a minute and whenever a check or review changes, in one line: head SHA (short), checks passed/pending/failed, each listed bot's state.
 - **CI gate terminal:** every check the profile's CI gate names has a terminal state on the current head (`bucket` is `pass`, `fail`, `skipping` or `cancel`). With a gate of "None detected", wait until every check reported on the head is terminal; none at all is terminal.
 - **Listed bot final:** it has submitted a review, or it has a check run in a terminal state, on the current head SHA. A listed bot that has not done either 15 minutes after the CI gate became terminal is a bot blocker. Stop waiting for it and carry on.
