@@ -44,6 +44,8 @@ Stop, report why and change nothing when any of these holds:
 
    Name it by the profile's **Pull requests** branch convention. With "no convention", use `<issue number>-<short-slug>`, for example `42-copy-history`. When the branch already exists for this issue, switch to it instead.
 
+   Work in this checkout. If git or the file system refuses a write (a sandbox such as Codex `workspace-write` makes `.git` read-only: `Operation not permitted`), stop and ask the user to approve the escalation their client offers, or to run the command themselves. Never work around it with another clone, worktree or copy, inside or outside the repository.
+
 ## Phase 3: Build
 
 Make the smallest coherent change that meets the acceptance criteria. Reuse what the repository already has before adding code, files or dependencies. Stay inside the issue's scope; an unrelated problem you notice is a proposed follow-up, not part of this change.
@@ -68,7 +70,7 @@ Preflight checks the final state before anyone reviews it. Run it once, after th
 
 **Independent review.** Move the issue to the **first** `review`-behavior status, in the order `get_workspace` lists them, and read it back. Then get one skeptical review from a reviewer that did not write the change:
 
-- **Preferred:** your client's subagent feature, with a fresh context and read-only tools where the client lets you choose them (in Claude Code, a read-only subagent type).
+- **Preferred:** your client's subagent feature (Claude Code's Agent tool, Codex's `spawn_agent`), with a fresh context and no edit tools where the client lets you choose. Prefer a reviewer that can run the profile's commands; if it cannot, say so in the evidence.
 - **Otherwise:** a second non-interactive session of the same CLI, read-only, run from the repository root:
 
   ```sh
@@ -79,6 +81,8 @@ Preflight checks the final state before anyone reviews it. Run it once, after th
 Both run on the user's own agent and subscription. No paid review service, review bot or review API is needed or called.
 
 The review brief is self-contained: the issue's acceptance criteria and non-goals, the base and head SHAs, how to see the diff, the evidence table, the docs impact line and the profile's commands. Ask the reviewer to try to disprove each criterion, to check correctness, error handling, security, data safety and scope, and to return findings as **blocker**, **should fix** or **optional**, each with a file and line. For UI work, add: check whole control groups, keyboard use and narrow layouts. The reviewer reads and runs checks; it does not edit.
+
+Record which reviewer ran, by the subagent's name or type, or the exact second-session command, so the claim can be checked.
 
 If no independent reviewer can run (no subagent feature and the second session is denied or fails), say so plainly in the evidence and the report. Never present your own review as independent.
 
