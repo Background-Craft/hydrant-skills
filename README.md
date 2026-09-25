@@ -1,18 +1,23 @@
 # hydrant-skills
 
-One skill that teaches your agent how to behave inside a [Hydrant](https://hydrant.dev) workspace. Read everything before touching anything. Write with receipts. Say what actually happened.
+Skills that teach your agent how to work inside a [Hydrant](https://hydrant.dev) workspace. Read everything before touching anything. Write with receipts. Say what actually happened.
 
-Hydrant already hands agents its tools over MCP. Tools describe what an agent *can* call. This skill covers what it *should* do.
+Hydrant already hands agents its tools over MCP. Tools describe what an agent *can* call. These skills cover what it *should* do.
 
-Read it: [skills/hydrant/SKILL.md](./skills/hydrant/SKILL.md).
+- [`hydrant`](./skills/hydrant/SKILL.md): the base every other skill relies on.
+- [`hydrant-setup`](./skills/hydrant-setup/SKILL.md): scans your repository, installs the rest without overwriting your own skills, and writes the repository profile.
 
 ## Install
 
 ```sh
-npx skills add Background-Craft/hydrant-skills
+npx skills add Background-Craft/hydrant-skills -s hydrant-setup
 ```
 
-That is the whole installer. It uses the [skills CLI](https://github.com/vercel-labs/skills), detects the agents you have, and writes a skill directory, an optional symlink and a lockfile. Nothing else. No hooks, no shell scripts, no edits to your instructions files.
+Then ask your agent to run `hydrant-setup`. Install it on its own with `-s`: a plain `npx skills add Background-Craft/hydrant-skills -y` overwrites any skill of yours with the same name, such as your own `refine`, without asking. Add `-a claude-code`, `-a codex` or both to keep the CLI from linking it into every agent folder it finds; setup always does this for the skills it installs.
+
+Only want the base skill? `npx skills add Background-Craft/hydrant-skills -s hydrant`.
+
+The [skills CLI](https://github.com/vercel-labs/skills) is the whole installer. It detects the agents you have, and writes a skill directory, an optional symlink and a lockfile. Nothing else. No hooks, no shell scripts, no edits to your instructions files.
 
 - `-g` installs for your user instead of this project.
 - `-a claude-code` picks one agent. Repeat `-a` for more.
@@ -28,6 +33,17 @@ Project install with Claude Code and Codex both selected:
 
 With a single agent selected, the CLI copies the skill straight into that agent's directory (`.claude/skills/hydrant/` for Claude Code, `.agents/skills/hydrant/` for Codex) and skips the symlink. Either way that directory and the lockfile are the only changes. Installing a skill does not connect a client, create a key or authorize anything.
 
+### What setup does
+
+`hydrant-setup` reads your skills, `skills-lock.json`, AGENTS.md/CLAUDE.md, scripts, CI, deploy config and any review bot (none is fine; no paid service is needed). It shows one plan and waits for your answer before writing anything.
+
+- **New skills** are installed one at a time with `-s <name>` and explicit `-a` agents, so nothing outside the folders it checked is touched.
+- **A skill you already have** with the same name stays as it is by default, and setup prints a short Hydrant section you can paste into it. It is replaced only if you say so, after a verified backup to `.agents/hydrant-setup-backup/<name>/`.
+- **The profile**, `.agents/hydrant-workflow.md`, holds this repository's facts: base branch, commands, CI gate, PR conventions, review bots, release steps, what "done" means and which skills were installed. It is yours to edit; the skills CLI never touches it. Statuses, acceptance and ship grants stay in your Hydrant workspace.
+- **Running it again** rescans and proposes additions to the profile, and offers any pack skill you don't have yet. It never rewrites your lines or updates installed skills, and writes nothing when nothing changed.
+
+Setup does not edit AGENTS.md or CLAUDE.md, create keys, connect clients or write to Hydrant.
+
 ### Update and remove
 
 ```sh
@@ -38,7 +54,7 @@ npx skills remove hydrant
 
 `update` re-downloads every GitHub-sourced skill in the project and overwrites the installed copy, including your edits, even when nothing changed upstream. Keep local changes somewhere else, or install with a local path (`npx skills add ./path`), which `update` leaves alone entirely.
 
-`remove hydrant` deletes this skill's directory and link and leaves every other skill, `skills-lock.json` and your agent configuration alone.
+`remove hydrant` deletes that skill's directory and link and leaves every other skill, `skills-lock.json` and your agent configuration alone.
 
 ### Telemetry
 
