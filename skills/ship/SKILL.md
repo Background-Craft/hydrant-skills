@@ -52,7 +52,7 @@ Stop, report why and change nothing when any of these holds:
 
 Ship publishes, merges, releases and marks done only under a **ship grant**: the user's explicit confirmation, in this conversation, of the grant text below for one named issue.
 
-1. Show the grant text, filled in, and ask the user to confirm it for this issue:
+1. Show the grant text below word for word, filling in only the parts in angle brackets, and ask the user to confirm it for this issue. Do not shorten or reword it: what the user confirms, and what you record, is exactly this text:
 
    > **Ship grant for #N "<title>"** (<issue link>). Take this issue from its current status through any building and review still to do, publication, the CI gate at the exact head, merge by <merge method>, the post-merge checks, the release steps in `.agents/hydrant-workflow.md` (<one line per step, or "none recorded">) and the done status. For this issue's accepted scope, you delegate agent review and acceptance.
    >
@@ -69,8 +69,7 @@ Ship publishes, merges, releases and marks done only under a **ship grant**: the
    - Issue: #N, version <v>
    - Agent: <which assignee is you>
    - Skill: ship, <source and hash from skills-lock.json, or `git hash-object` of this SKILL.md>
-   - Delegated: <the delegated sentence, verbatim>
-   - Reserved: <the reserved list, verbatim>
+   - Grant text: <the full text you showed, verbatim>
    ```
 
 Everything below runs under that grant. Reviews and acceptance done under it are labelled **delegated** wherever they are recorded.
@@ -166,7 +165,7 @@ Read the profile's **Release and deploy** section.
 
 - "None detected", "none" or empty: no release stage. Record "no release steps recorded" and go to Phase 10.
 - Otherwise each line is one step, in order. Before running a step, check it against the reserved list in the grant. A step that adds or rotates a secret, provisions or pays for infrastructure, changes production data, deletes anything, or needs a person to do something by hand is **not run**: stop and record it as a boundary. A step whose command is not written in the profile is not guessed: stop and ask.
-- Run each remaining step exactly as written, once, from the repository root, at the merged revision. Record the command, exit status and the identifier it produces (run URL, tag, deploy or version ID).
+- Run each remaining step exactly as written, once, from the repository root. When a step uses local files (a build, a package publish), first bring this checkout to the merged revision (`git switch <base>`, then `git pull --ff-only`). Never make another clone or worktree for it. Record the command, exit status and the identifier it produces (run URL, tag, deploy or version ID).
 - A step that starts a run elsewhere, such as `gh workflow run`, is finished only when that run is: find it (`gh run list --workflow <file> --limit 5 --json databaseId,headSha,status,conclusion,url,createdAt`), wait for it as in Phase 6, and check its `headSha` is the merged SHA. If the base moved on, record which SHA it released.
 - Run the verification the step names. A step with no recorded verification is checked by its exit status and any run it started, and the evidence says "no verification recorded".
 - A failed step is retried once only when the profile says that step is safe to retry. Otherwise, or when it fails again, stop.
