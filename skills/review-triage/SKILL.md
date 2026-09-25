@@ -57,15 +57,16 @@ gh pr view <pr> --json headRefOid,reviewDecision,reviews --jq '{head: .headRefOi
 ```
 
 - The plain `gh pr checks <pr>` exits `8` while any check is pending. That is waiting, not failure. Exit `0` means all passed; exit `1` means a check failed or no checks are reported yet on this head. The `--json` form exits `0` even while checks are pending, so read its `bucket` fields for detail, never its exit code.
+- Checks for any head other than the one you expect are stale: right after a push, GitHub can briefly show the old head's results. Compare `headRefOid` with the SHA you pushed before believing a result.
 - No checks reported yet is waiting too: right after a push, checks take a moment to register. Keep polling for up to 5 minutes after the head changed. After that, a gate check that never appeared is a CI blocker, and with a gate of "None detected", no checks at all is terminal.
 - Exit `1` can also mean a check outside the gate failed while gate checks are still pending. Decide from the gate checks' `bucket` values, not from the exit code alone.
 - Wait between polls with a `sleep 30` command. Where the client refuses a foreground sleep (Claude Code does), use its monitor tool instead: one loop that polls every 30 seconds and prints one status line per poll. It stops when checks are reported and none is pending, or after 10 polls with none reported:
 
   ```sh
-  i=0; while :; do i=$((i+1)); gh pr checks <pr> >/dev/null 2>&1; s=$?; n=$(gh pr checks <pr> --json bucket --jq length 2>/dev/null || echo 0); echo "$(date +%T) head $(gh pr view <pr> --json headRefOid --jq '.headRefOid[0:7]') checks exit $s, $n reported"; { [ "$s" -ne 8 ] && [ "$n" -gt 0 ]; } && break; [ "$n" -eq 0 ] && [ "$i" -ge 10 ] && break; sleep 30; done
+  want=<head-sha>; i=0; while :; do i=$((i+1)); h=$(gh pr view <pr> --json headRefOid --jq .headRefOid); gh pr checks <pr> >/dev/null 2>&1; s=$?; n=$(gh pr checks <pr> --json bucket --jq length 2>/dev/null || echo 0); echo "$(date +%T) head $(printf %.7s "$h") checks exit $s, $n reported"; if [ "$h" = "$want" ]; then { [ "$s" -ne 8 ] && [ "$n" -gt 0 ]; } && break; [ "$n" -eq 0 ] && [ "$i" -ge 10 ] && break; fi; sleep 30; done
   ```
 
-  When it stops, read the gate checks' buckets again; if a gate check is still pending, start the loop again.
+  `<head-sha>` is the full SHA the PR should now have: `headRefOid` from Phase 1, or `git rev-parse HEAD` after your push. Right after a push, GitHub can briefly report the old head's results; a poll whose head is not that SHA is stale and never counts. When the loop stops, read the gate checks' buckets again; if a gate check is still pending, start the loop again.
 - Never use one silent command that returns only when everything is done, such as `gh pr checks --watch`, and never run a second wait loop beside the first. Do not give the final report or end the run before Phase 6.
 - Report progress at least once a minute and whenever a check or review changes, in one line: head SHA (short), checks passed/pending/failed, each listed bot's state.
 - **CI gate terminal:** every check the profile's CI gate names has a terminal state on the current head (`bucket` is `pass`, `fail`, `skipping` or `cancel`). With a gate of "None detected", wait until every check reported on the head is terminal; none at all is terminal.
