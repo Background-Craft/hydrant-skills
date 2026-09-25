@@ -57,7 +57,7 @@ gh pr view <pr> --json headRefOid,reviewDecision,reviews --jq '{head: .headRefOi
 ```
 
 - The plain `gh pr checks <pr>` exits `8` while any check is pending. That is waiting, not failure. Exit `0` means all passed; exit `1` means a check failed or no checks are reported yet on this head. The `--json` form exits `0` even while checks are pending, so read its `bucket` fields for detail, never its exit code.
-- Checks for any head other than the one you expect are stale: right after a push, GitHub can briefly show the old head's results. Compare `headRefOid` with the SHA you pushed before believing a result.
+- Checks for any head other than the one you expect are stale: right after a push, GitHub can briefly show the old head's results. Compare `headRefOid` with the SHA you pushed before believing a result. If the head moves to a SHA you did not push, someone else pushed: stop waiting, report it, and start again from Phase 1.
 - No checks reported yet is waiting too: right after a push, checks take a moment to register. Keep polling for up to 5 minutes after the head changed. After that, a gate check that never appeared is a CI blocker, and with a gate of "None detected", no checks at all is terminal.
 - Exit `1` can also mean a check outside the gate failed while gate checks are still pending. Decide from the gate checks' `bucket` values, not from the exit code alone.
 - Wait between polls with a `sleep 30` command. Where the client refuses a foreground sleep (Claude Code does), use its monitor tool instead: one loop that polls every 30 seconds and prints one status line per poll. It stops when checks are reported and none is pending, or after 10 polls with none reported:
