@@ -26,7 +26,7 @@ If the request is really several independent pieces of work, say so and capture 
 
 ## Phase 2: Search for duplicates
 
-Search before creating. Use `list_issues` with `q` for the key terms, a few synonyms and any issue number mentioned. Include finished work (`display.completed: true`) so a Done or Canceled match is visible. Follow the cursor until every page of each search is read.
+Search before creating. Use `list_issues` with `filters.q` for the key terms, a few synonyms and any issue number mentioned. Leave `display` out: the default already includes Done and Canceled work, and a partial `display` object is rejected. Follow the cursor until every page of each search is read.
 
 Open each plausible match with `get_issue`, and with `list_activity` when the title alone does not settle it.
 
@@ -43,16 +43,19 @@ Never silently close, repurpose, retitle or expand an existing issue to fit the 
 
 Use only what `get_workspace` and the project reads return. Never reuse an ID from memory or from another workspace.
 
-- **Labels:** pick an existing area label and only the additional labels that add a real distinction. A bug label means a demonstrated defect. A UX label means interaction or presentation is the main deliverable. A decision label means a specific unresolved choice. No filler labels, and none that repeat priority, status, assignee or a project name.
-- **Project and milestone:** add the issue to one project only when it contributes to that project's stated outcome without expanding its accepted scope. Read plausible projects with `get_project` (and `get_milestone` when criteria are truncated). A shared name or keyword is a clue, not proof. Prefer a Planned or Active project and an Open milestone; project-only membership is fine. No clear fit means no project. Two competing fits means leave it out and name both in the report.
-- **Priority, assignee and size:** set them only when the user gave them or the workspace's routing makes the choice obvious. Otherwise leave them for `refine`. Skip size entirely when `get_workspace` reports the sizing method `off`.
+- **Labels:** pick an existing area label, if the workspace uses them, and only the additional labels that add a real distinction. A bug label means a demonstrated defect. A UX label means interaction or presentation is the main deliverable. A decision label means a specific unresolved choice. No filler labels, and none that repeat priority, status, assignee or a project name.
+- **Project and milestone:** add the issue to one project only when it contributes to that project's stated outcome without expanding its accepted scope. Read plausible projects with `get_project` (and `get_milestone` when criteria are truncated). A shared name or keyword is a clue, not proof. Use Planned or Active projects and Open milestones. Do not add work to a Paused, Completed or Canceled project or restore an archived one to force a match: adding an open issue can move an automatically completed project back to Active. Do that only when the user explicitly asks, after reviewing `inspect_project`. Project-only membership is fine. No clear fit means no project. Two competing fits means leave it out and name both in the report.
+- **Priority, assignee and size:** set them only when the user gave them. Otherwise leave them for `refine`. Skip size entirely when `get_workspace` reports the sizing method `off`.
+- **Parent:** only when the user names one. Read it, then send `parentId`. A parent implies neither the same project nor a blocking link.
 - **Status:** leave the server's default. A status with `ready` behavior requires refinement, which is `refine`'s job.
+
+A failed catalog or project read is not an empty catalog: report the classification as incomplete instead of filing without it.
 
 If a useful label or project is missing, propose it (name, meaning, and which issues would use it) in the report. Create labels, projects or milestones only when the user explicitly asked for that.
 
 ## Phase 4: Create and read back
 
-Write the description as:
+Write the description from this outline, keeping only the sections you have content for. A title and one sentence is a valid capture; do not manufacture a spec.
 
 ```markdown
 <one-paragraph problem or outcome, in the requester's terms>
@@ -66,9 +69,8 @@ Write the description as:
 Requested by <who> on <date>.
 ```
 
-1. `create_issue` with a fresh request UUID, the title, description, labels and any known properties. Send project membership in `properties.membership` with the revision rule `get_workspace` publishes under `projects.membershipRevision`, and an explicit `null` milestone for project-only membership.
-2. `get_issue` to confirm what the server stored: number, labels, membership and status.
-3. If the create was uncertain (timeout, 503, no answer), resend the same UUID and payload before anything else. Never create a second issue to be safe.
+1. `create_issue` with a fresh request UUID, the title, description, labels and any known properties. Send project membership in `properties.membership` with the revision rule `get_workspace` publishes under `projects.membershipRevision`, and an explicit `null` milestone for project-only membership. If the result is uncertain (timeout, 503, no answer), resend the same UUID and payload before anything else. Never create a second issue to be safe.
+2. `get_issue` to confirm what the server stored: number, labels, membership and status. Do not report the capture as done until this read-back succeeds.
 
 ## Phase 5: Report
 

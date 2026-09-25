@@ -36,7 +36,7 @@ ls -la .agents/skills .claude/skills 2>/dev/null
 cat skills-lock.json 2>/dev/null
 ```
 
-For every entry record its name, path and kind: a directory, or a symlink with its target (`readlink`). A `.claude/skills/<name>` symlink into `.agents/skills/<name>` is one skill in two places, not two skills. So is every skill when `.claude` or `.claude/skills` is itself a symlink into `.agents` (check with `readlink .claude .claude/skills`). From `skills-lock.json`, note each skill's `source` and `sourceType`. Skills whose source is `Background-Craft/hydrant-skills` but which the pack no longer ships (the April 2026 `align`, `cleanup`, `create-issue`, `go`, `nail`, `preflight`, `prep`, `refine`, `setup`, `yeet`) are stale earlier installs; report them as such.
+For every entry record its name, path and kind: a directory, or a symlink with its target (`readlink`). A `.claude/skills/<name>` symlink into `.agents/skills/<name>` is one skill in two places, not two skills. So is every skill when `.claude` or `.claude/skills` is itself a symlink into `.agents` (check with `readlink .claude .claude/skills`). From `skills-lock.json`, note each skill's `source` and `sourceType`. Skills from `Background-Craft/hydrant-skills` installed before 0.1.0 (the April 2026 `align`, `cleanup`, `create-issue`, `go`, `nail`, `preflight`, `prep`, `refine`, `setup`, `yeet`) are stale earlier installs; report them as such. Some of those names (`refine` now, others later) are shipped again with new content, so a stale one also shows up as a clash in Phase 2.
 
 ### Agents to install for
 
