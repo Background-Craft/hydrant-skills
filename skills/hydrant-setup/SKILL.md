@@ -119,6 +119,29 @@ npx skills add <source> -s <name> -a claude-code -a codex -y
 
 Use the `-a` values from the plan. Never drop `-s` (the CLI would overwrite every same-named skill) or `-a` (it would reach agent folders the scan never looked at).
 
+### Check each install on disk
+
+The CLI can exit 0 when it wrote nothing: a sandboxed run prints `Failed to install …` and then `Done!`. Don't trust the exit code or the last line. After each install, check the files:
+
+```sh
+test -f .agents/skills/<name>/SKILL.md && echo ok || echo missing   # when codex or more than one agent is chosen
+test -f .claude/skills/<name>/SKILL.md && echo ok || echo missing   # when claude-code is chosen
+```
+
+A single-agent install copies the skill straight into that agent's folder, so a Claude Code-only install has no `.agents/skills/<name>`. Check each other agent the user added in its own skills folder the same way.
+
+A skill is installed only when every check prints `ok`. If your client denied the command, the output shows `EPERM`, `Operation not permitted` or `Failed to install`, or any check prints `missing`:
+
+- Mark that skill **failed**, with the reason (the denial, the error line, or "exit 0 but no files").
+- Stop. Don't run the remaining installs, replaces or backups.
+- Print what is left for the user to run from their own terminal, with `<source>` resolved:
+  - For each `new` skill that isn't installed yet, the same `npx skills add <source> -s <name> -a … -y` line.
+  - For each replace not done yet, the backup and `diff` block below, then the `rm -rf` and that install line.
+  - Nothing for a kept clash. An install there would overwrite the user's skill.
+- Go on to write the profile, then report.
+
+A sandboxed client usually fails this way. Codex's `workspace-write` sandbox protects `.agents/`. Ask for the escalation your client offers before you give up, and report a refused escalation as a denial.
+
 ### Clashes the user kept
 
 Leave both locations untouched. Print this section for the user to paste into their own skill if they want it to work with Hydrant:
@@ -137,7 +160,7 @@ Back up every real directory first, into a folder no agent scans for skills:
 
 ```sh
 b=.agents/hydrant-setup-backup/<name>
-test -e "$b" && { echo "backup exists: stop and ask"; exit 1; }
+test -e "$b" && echo "backup exists: stop and ask"   # stop here if it prints
 mkdir -p "$b"
 cp -Rp .agents/skills/<name> "$b/agents"      # if it is a directory
 cp -Rp .claude/skills/<name> "$b/claude"      # if it is a directory, not a symlink into .agents
@@ -147,7 +170,16 @@ diff -r .claude/skills/<name> "$b/claude"
 
 Only after every `diff` is clean, remove the originals (`rm -rf` on exactly those paths) and install ours with the same `-s <name> -a … -y` command as above. A symlink needs no backup; note its old target. If a backup already exists, stop and ask rather than overwrite it.
 
-If a removal fails or your client denies it, stop for that skill: put back anything already removed (`cp -Rp` from the backup, then `diff -r` again), keep the backup, do not install over the original (the CLI would overwrite it), and report the path with the commands that finish the replace once the user has removed it (`rm -rf <path>`, then the same `npx skills add <source> -s <name> -a … -y`). A rerun does not replace skills, so do not tell the user to rerun setup for this.
+If a removal fails or your client denies it, stop for that skill: put back anything already removed (the numbered restore steps below), keep the backup, do not install over the original (the CLI would overwrite it), and report the path with the commands that finish the replace once the user has removed it (`rm -rf <path>`, then the same `npx skills add <source> -s <name> -a … -y`). A rerun does not replace skills, so do not tell the user to rerun setup for this.
+
+If the install after the removal fails the on-disk check above, restore before you stop, so the user's skill is never left missing:
+
+1. Remove whatever the failed install left at those paths (`rm -rf`).
+2. `cp -Rp` each backup back.
+3. Recreate a symlink from its noted target (`ln -s`).
+4. Run `diff -r` again.
+
+If the restore is denied too, keep the backup and print these restore commands for the user.
 
 ### Write the profile
 
@@ -162,7 +194,7 @@ If a removal fails or your client denies it, stop for that skill: put back anyth
 | Review bots | Bot logins and config files | "None detected (optional)"; never a question |
 | Release and deploy | Steps, or "none" | "None detected (optional)"; never a question |
 | Done | What "done" means here, beyond Hydrant's own acceptance | Ask |
-| Installed skills | Each installable pack skill (not `hydrant-setup`): installed, kept (clash) or replaced (backup path) | - |
+| Installed skills | Each installable pack skill (not `hydrant-setup`): installed, kept (clash), replaced (backup path), failed (reason) or not attempted | - |
 
 Template:
 
@@ -212,6 +244,10 @@ Repository facts for the Hydrant workflow skills. Written by `hydrant-setup`; ed
 - `refine`: kept yours (.agents/skills/refine)
 ```
 
+Record a failed skill as `failed (<reason>)` in "Installed skills", never as installed.
+
+If the write is denied or the file isn't there afterwards (`test -f .agents/hydrant-workflow.md`), print the complete profile text in one fenced block. Ask the user to save it as `.agents/hydrant-workflow.md` themselves, and report the profile as not written.
+
 Rules:
 
 - Only the "Ask" rows become questions. CI gate, review bots and release are detected or "None detected", never `unknown`.
@@ -224,7 +260,7 @@ Rules:
 When the profile exists:
 
 - Rescan (Phase 1) and compare each detected item (every script or target, workflow job, bot, deploy file) with the profile. An item the profile does not mention anywhere is new.
-- Never change or remove an existing line. Treat every line as the user's. The one exception: new names may be appended to the `Other` commands line.
+- Never change or remove an existing line. Treat every line as the user's. Two exceptions: new names may be appended to the `Other` commands line, and an "Installed skills" line that says `failed` or `not attempted` becomes `installed` once that skill passes the on-disk check and its `skills-lock.json` entry names the pack's source. A restored skill of the user's keeps its `failed` line.
 - Propose, as a diff, only additions for newly detected facts, and questions for lines whose detected source has gone (for example a script that is no longer in `package.json`).
 - Do not reinstall, update or replace installed skills. That is `npx skills update -p`, which overwrites local edits. A pack skill that is not here at all is `new` and may be offered through Phase 2.
 - If nothing changed, say so and write nothing.
@@ -236,8 +272,8 @@ End with:
 
 | Item | Result |
 | --- | --- |
-| Skills | Each pack skill: installed, kept, replaced (backup path) or failed, with the command's result |
-| Profile | Path, created / updated / unchanged, and every `unknown` left in it |
+| Skills | Each pack skill: installed, kept, replaced (backup path), failed (reason) or not attempted (after a failure). "Installed" only when the on-disk check passed. After any failure, the user's commands again |
+| Profile | Path, created / updated / unchanged / not written (denied, text printed), and every `unknown` left in it |
 | Backups | Paths, or none. They are plain files: the user decides whether to commit, ignore or delete them |
 | Hydrant connection | Whether Hydrant tools are available in this session. If none, point to the Connect section of the pack's README: <https://github.com/Background-Craft/hydrant-skills#connect> |
 | Next | Run `capture` or `refine` on an issue |
@@ -254,7 +290,8 @@ Hydrant workflow facts for this repository are in `.agents/hydrant-workflow.md`.
 - Pack skills listed from the source with `--list`, not from memory.
 - One plan shown and confirmed before any write.
 - Every install used `-s <name>` and the plan's `-a` agents.
+- Every "installed" skill was checked on disk; the first failure stopped the installs and printed the user's commands.
 - No existing skill overwritten without a named yes and a verified backup.
 - Profile has every section; nothing invented; no secrets or timestamps.
-- Rerun changed no existing line and wrote nothing when nothing moved.
+- Rerun changed no existing line beyond its two exceptions, and wrote nothing when nothing moved.
 - No AGENTS.md/CLAUDE.md edit, no key, no Hydrant write.
