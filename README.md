@@ -51,6 +51,7 @@ With a single agent selected, the CLI copies the skill straight into that agent'
 - **New skills** are installed one at a time with `-s <name>` and explicit `-a` agents, so nothing outside the folders it checked is touched.
 - **A skill you already have** with the same name stays as it is by default, and setup prints a short Hydrant section you can paste into it. It is replaced only if you say so, after a verified backup to `.agents/hydrant-setup-backup/<name>/`.
 - **The profile**, `.agents/hydrant-workflow.md`, holds this repository's facts: base branch, commands, CI gate, PR conventions, review bots, release steps, what "done" means and which skills were installed. It is yours to edit; the skills CLI never touches it. Statuses, acceptance and ship grants stay in your Hydrant workspace.
+- **Older Hydrant guidance** in AGENTS.md, CLAUDE.md or your own skills (tool names this server doesn't list, the old `hydrant.dev/mcp` endpoint, `hyd-NNN` IDs) is listed in the plan as "may conflict". Setup leaves those files as they are; you decide.
 - **Running it again** rescans and proposes additions to the profile, and offers any pack skill you don't have yet. It never rewrites your lines or updates installed skills. The one exception is a skill whose install failed: setup marks it installed once it is. It writes nothing when nothing changed.
 
 Setup does not edit AGENTS.md or CLAUDE.md, create keys, connect clients or write to Hydrant.
