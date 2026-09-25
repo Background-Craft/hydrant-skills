@@ -49,7 +49,7 @@ Use only what `get_workspace` and the project reads return. Never reuse an ID fr
 - **Parent:** only when the user names one. Read it, then send `parentId`. A parent implies neither the same project nor a blocking link.
 - **Status:** leave the server's default. A status with `ready` behavior requires refinement, which is `refine`'s job.
 
-A failed catalog or project read is not an empty catalog: report the classification as incomplete instead of filing without it.
+A failed catalog or project read is not an empty catalog: still file the issue, leave out the classification you could not read, and report it as incomplete.
 
 If a useful label or project is missing, propose it (name, meaning, and which issues would use it) in the report. Create labels, projects or milestones only when the user explicitly asked for that.
 
