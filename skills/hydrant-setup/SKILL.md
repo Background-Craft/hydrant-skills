@@ -70,8 +70,8 @@ The installable set is every listed skill except `hydrant-setup`. Do not use a l
 | --- | --- |
 | Instructions | `AGENTS.md`, `CLAUDE.md` (read only, for conventions such as branch names or required checks) |
 | Base branch | `git symbolic-ref --short refs/remotes/origin/HEAD`, or `gh repo view --json defaultBranchRef` |
-| Branch protection | `gh api repos/{owner}/{repo}/branches/<base>/protection` and `gh api repos/{owner}/{repo}/rules/branches/<base>`. A 403/404, no `gh` or no sign-in means "not readable". That is a normal result. |
-| Package manager | Lockfile: `pnpm-lock.yaml`, `yarn.lock`, `bun.lock`/`bun.lockb`, `package-lock.json` |
+| Branch protection | `gh api repos/{owner}/{repo}/branches/<base>/protection` and `gh api repos/{owner}/{repo}/rules/branches/<base>`. A protection 404 whose `message` is `Branch not protected` is a readable answer: with an empty (`[]`) or 404 rules result it means "none"; if rules exist, list them; if the rules call fails any other way, "not readable". A 403, any other 404 (for example, the repository is not visible), no `gh` or no sign-in means "not readable". That is a normal result. |
+| Package manager | Lockfile: `pnpm-lock.yaml`, `yarn.lock`, `bun.lock`/`bun.lockb`, `package-lock.json`. With lockfiles from more than one manager, Install is an Ask: name each lockfile by file name and propose one manager with its reason (the README's recommendation, or else the lockfile committed most recently, from `git log -1 --format=%ct -- <lockfile>`; say so when neither settles it) |
 | Commands | `package.json` `scripts`; otherwise the stack's equivalent: `Makefile` targets, `pyproject.toml` / `tox.ini` / `noxfile.py`, `Cargo.toml`, `go.mod`, `justfile`, `Taskfile.yml` |
 | CI | `.github/workflows/*.yml`: workflows triggered by `pull_request`, and their job names |
 | Deploy | Deploy workflows or scripts, `wrangler.toml`/`wrangler.jsonc`, `vercel.json`, `netlify.toml`, `fly.toml`, `render.yaml`, `Procfile` |
@@ -105,7 +105,7 @@ refine     clash    .agents/skills/refine (dir, not from pack)  keep yours (defa
 Profile    .agents/hydrant-workflow.md                          create
 ```
 
-Then ask, in one message, for: approval of the plan, a keep-or-replace answer for each clash (keep is the default), and the facts Phase 1 could not detect (see the profile's "When unknown" column). Wait for the answer. Replace only a skill the user named for replacement. If the user cannot answer a fact now, record `unknown`.
+Then ask, in one message, for: approval of the plan, a keep-or-replace answer for each clash (keep is the default), the facts Phase 1 could not detect (see the profile's "When unknown" column), and Install whenever lockfiles from more than one manager exist. Wait for the answer. Replace only a skill the user named for replacement. If the user cannot answer a fact now, record `unknown`.
 
 ## Phase 3: Apply
 
@@ -155,8 +155,8 @@ If a removal fails or your client denies it, stop for that skill: put back anyth
 
 | Section | Contents | When unknown |
 | --- | --- | --- |
-| Repository | Base branch(es); branch protection or "not readable" | Ask |
-| Commands | Install, quality/lint, typecheck, test, browser/e2e; each with its source. Then an "Other" line naming every remaining script or target, so a later rerun can tell what is new | Ask; "none" is a valid answer |
+| Repository | Base branch(es); branch protection: its rules, "none" or "not readable" | Ask |
+| Commands | Install, quality/lint, typecheck, test, browser/e2e; each with its source. Install names every other lockfile present. Then an "Other" line naming every remaining script or target, so a later rerun can tell what is new | Ask; "none" is a valid answer. Also ask for Install when lockfiles from more than one manager exist |
 | CI gate | Workflows/jobs that must pass before merge | "None detected"; never a question |
 | Pull requests | Branch naming, PR title/body conventions, merge method | Ask, or "no convention" |
 | Review bots | Bot logins and config files | "None detected (optional)"; never a question |
@@ -174,11 +174,11 @@ Repository facts for the Hydrant workflow skills. Written by `hydrant-setup`; ed
 ## Repository
 
 - Base branch: `main` (origin/HEAD)
-- Branch protection: not readable
+- Branch protection: none (protection 404 "Branch not protected", no rules)
 
 ## Commands
 
-- Install: `pnpm install` (pnpm-lock.yaml)
+- Install: `pnpm install` (pnpm-lock.yaml; package-lock.json also present)
 - Lint: `pnpm lint` (package.json)
 - Typecheck: unknown
 - Test: `pnpm test` (package.json)
