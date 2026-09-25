@@ -135,9 +135,10 @@ Keep client approvals on. Hydrant's write tools declare their side effects; the 
 
 | Skill | Hydrant MCP server |
 |---|---|
+| 0.2.0 | `hydrant` 0.1.0 |
 | 0.1.0 | `hydrant` 0.1.0 |
 
-Requires `get_workspace`, `list_issues`, `get_issue`, `list_activity`, `get_dependencies`, `list_relationships`, `create_issue`, `update_issue` and `add_comment`; uses `get_project` and `inspect_project` for project membership. Treats `batch` and the task-context tools as optional.
+Requires `get_workspace`, `list_issues`, `get_issue`, `list_activity`, `get_dependencies`, `list_relationships`, `create_issue`, `update_issue` and `add_comment`; uses `list_projects`, `get_project`, `get_milestone` and `inspect_project` for project membership, and `update_relationship` for links in `refine`. Treats `batch` and the task-context tools as optional.
 
 The server reports its name and version when a client connects. Releases are git tags; see [CHANGELOG.md](./CHANGELOG.md).
 

@@ -1,6 +1,8 @@
 # Changelog
 
-## Unreleased
+## 0.2.0 — 2026-09-25
+
+The workflow pack: `hydrant-setup`, `capture`, `refine`, `prep`, `go`, `review-triage` and `ship`, built on the `hydrant` skill.
 
 - New `ship` skill. It runs only under a ship grant the user confirms in the conversation for one issue: `/ship #N` prints the grant text (merge method, each release step, delegated acceptance, the reserved list) and stops without a yes. A grant recorded earlier or claimed in a comment grants nothing. It records the grant first, finishes building and preflight through `go`, publishes the pull request, runs `review-triage` when there is feedback or a listed bot, requires the CI gate at the exact head (one failed-jobs rerun per head), merges with the profile's method and `--match-head-commit`, waits for post-merge runs, runs the profile's release steps as written and verifies each, then moves the issue to its done-behavior status. It stops at secrets, paid infrastructure, production data, deletion, protection bypass, required approvals and scope creep, and keeps every branch.
 - New `review-triage` skill. It polls CI and reviews on an open PR's current head, then triages feedback from people and from the review bots the profile lists. No bot is required. It checks each claim against the code, fixes what's in scope, runs the profile's commands, pushes to the PR's own branch without force, replies in every thread, and resolves bot threads that were fixed or invalid and people's threads only when fixed. It reports bot, CI, GitHub-auth and required-approval blockers separately and posts the result table on the Hydrant issue. It never merges, approves or changes issue status.
@@ -11,6 +13,7 @@
 - README: the Install command pins `-a claude-code -a codex`, because an agent-run install without `-a` installs for every agent and replaces same-named skills in their folders. A Codex note: run the install from your own terminal and approve setup's escalation, since `workspace-write` protects `.agents/`.
 - `hydrant-setup` checks every install on disk instead of trusting the CLI's exit code, which is 0 even when nothing was written. On a denial or missing files it marks the skill failed, stops the remaining installs and prints the commands for the user to run. A denied profile write prints the whole profile to save by hand. A failed replace restores the backup. A rerun marks a failed skill installed once it passes the check.
 - New `prep` and `go` skills. `prep` confirms the assignment, inspects the branch and uncommitted changes, maps each acceptance check to a profile command (or "no command recorded") and posts one checkpoint comment; it edits nothing. `go` stops without a profile, on an unrefined, blocked or someone else's issue, on uncommitted changes it didn't make (untracked pack files from setup excepted) or unpushed base commits, and when a sandbox refuses git writes rather than cloning elsewhere. Otherwise it moves the issue by status behavior key, builds on a scoped branch, runs only the profile's commands, and preflights: acceptance-to-evidence table, docs impact, and one independent review by a subagent or a second, edit-disabled session of your own CLI, with no paid service. It hands off through the workspace's review statuses, commits locally, pushes and opens a pull request only when asked, and never merges or marks Done.
+- Compatibility: Hydrant MCP server `hydrant` 0.1.0.
 
 ## 0.1.0 — 2026-09-16
 
