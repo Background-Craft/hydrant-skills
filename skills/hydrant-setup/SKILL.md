@@ -38,6 +38,24 @@ cat skills-lock.json 2>/dev/null
 
 For every entry record its name, path and kind: a directory, or a symlink with its target (`readlink`). A `.claude/skills/<name>` symlink into `.agents/skills/<name>` is one skill in two places, not two skills. So is every skill when `.claude` or `.claude/skills` is itself a symlink into `.agents` (check with `readlink .claude .claude/skills`). From `skills-lock.json`, note each skill's `source` and `sourceType`. A skill whose lockfile source is `Background-Craft/hydrant-skills` but whose name the pack's `--list` (below) no longer shows is a stale earlier install, such as the April 2026 `align`, `nail` or `yeet`; report it as such. A same-named skill the pack does list (for example an April 2026 `refine`) is reported as a clash in Phase 2 like any other.
 
+### Older Hydrant guidance
+
+Instructions or skills written for an earlier Hydrant give agents conflicting directions once the pack is installed. Read the text files (such as Markdown, YAML, JSON, shell or Python scripts and plain text) of:
+
+- `AGENTS.md` and `CLAUDE.md`
+- each skill folder found above, except skills whose `skills-lock.json` source is `Background-Craft/hydrant-skills` (any case, with or without `https://github.com/`) or, after resolving a relative path, the pack source found below
+
+Look for these signals:
+
+| Signal | Counts when |
+| --- | --- |
+| A Hydrant tool the server does not list | A name written as a Hydrant MCP tool (`mcp__hydrant__<tool>`, `mcp__hydrant-<anything>__<tool>`, or a bare `snake_case` name the text calls a Hydrant tool) whose `<tool>` part, after the last `__`, is not a tool name on any Hydrant server connected to this session. The server prefix does not matter: `mcp__hydrant__get_issue` is fine when you have `get_issue` under another server name. Compare with the tools you actually have, never a list from memory or this file. With no Hydrant tools in the session, skip this signal. |
+| The old endpoint | `hydrant.dev/mcp`. Today's endpoint is `hydrant.dev/api/mcp`, which does not match |
+| Old keys or IDs | `hyd_pat_` tokens; `hyd-` followed by digits, any case (`hyd-123`, `HYD-42`) |
+| Old model terms | The whole words "bundle", "space" or "work item" used as names for Hydrant objects (a Hydrant space, bundle the work items). Not "workspace", "bundler", or ordinary use in a sentence that has nothing to do with Hydrant |
+
+A file with no signal is not reported, even when it mentions Hydrant. Record each hit's path, the signals and, for AGENTS.md and CLAUDE.md, their line numbers. Name the signal, never quote a token. Treat a skill's `.agents/skills` folder and its `.claude/skills` copy as one entry with both paths, as for clashes. This is read-only: never edit, move or back up a flagged file.
+
 ### Agents to install for
 
 Without `-a`, the skills CLI links a skill into every agent folder it can find (`.windsurf/skills`, `.kiro/skills`, a top-level `skills/` and more) and deletes any same-named folder there first. So every install in this skill names its agents, and the scan covers exactly their folders:
@@ -68,7 +86,7 @@ The installable set is every listed skill except `hydrant-setup`. Do not use a l
 
 | Fact | Where to look |
 | --- | --- |
-| Instructions | `AGENTS.md`, `CLAUDE.md` (read only, for conventions such as branch names or required checks) |
+| Instructions | `AGENTS.md`, `CLAUDE.md` (read only, for conventions such as branch names or required checks, and for older Hydrant guidance above) |
 | Base branch | `git symbolic-ref --short refs/remotes/origin/HEAD`, or `gh repo view --json defaultBranchRef` |
 | Branch protection | `gh api repos/{owner}/{repo}/branches/<base>/protection` and `gh api repos/{owner}/{repo}/rules/branches/<base>`. A protection 404 whose `message` is `Branch not protected` is a readable answer: with an empty (`[]`) or 404 rules result it means "none"; if rules exist, list them; if the rules call fails any other way, "not readable". A 403, any other 404 (for example, the repository is not visible), no `gh` or no sign-in means "not readable". That is a normal result. |
 | Package manager | Lockfile: `pnpm-lock.yaml`, `yarn.lock`, `bun.lock`/`bun.lockb`, `package-lock.json`. With lockfiles from more than one manager, Install is an Ask: name each lockfile by file name and propose one manager with its reason (the README's recommendation, or else the lockfile committed most recently, from `git log -1 --format=%ct -- <lockfile>`; say so when neither settles it) |
@@ -103,7 +121,13 @@ hydrant    new      -                                           install
 refine     clash    .agents/skills/refine (dir, not from pack)  keep yours (default) / replace with backup
            clash    .claude/skills/refine (dir, separate copy)
 Profile    .agents/hydrant-workflow.md                          create
+
+May conflict: older Hydrant guidance, left as is, your call
+CLAUDE.md      lines 12, 15: tools this Hydrant server does not list (set_dependencies, replace_issue_description)
+sauce-hydrant  .agents/skills/sauce-hydrant (dir), .claude/skills/sauce-hydrant (separate copy): hyd-NNN IDs, "work item"
 ```
+
+When the tool signal was skipped and a scanned file names a Hydrant tool, the block gets one line: `Tool names not checked: no Hydrant tools in this session`, followed by the files and lines that name them. Show the "May conflict" block when Phase 1 flagged something or that line applies, and not otherwise. The user decides what to do with flagged files; setup asks nothing about them.
 
 Then ask, in one message, for: approval of the plan, a keep-or-replace answer for each clash (keep is the default), the facts Phase 1 could not detect (see the profile's "When unknown" column), and Install whenever lockfiles from more than one manager exist. Wait for the answer. Replace only a skill the user named for replacement. If the user cannot answer a fact now, record `unknown`.
 
@@ -263,6 +287,7 @@ When the profile exists:
 - Never change or remove an existing line. Treat every line as the user's. Two exceptions: new names may be appended to the `Other` commands line, and an "Installed skills" line that says `failed` or `not attempted` becomes `installed` once that skill passes the on-disk check and its `skills-lock.json` entry names the pack's source. A restored skill of the user's keeps its `failed` line.
 - Propose, as a diff, only additions for newly detected facts, and questions for lines whose detected source has gone (for example a script that is no longer in `package.json`).
 - Do not reinstall, update or replace installed skills. That is `npx skills update -p`, which overwrites local edits. A pack skill that is not here at all is `new` and may be offered through Phase 2.
+- Show the "May conflict" block as in Phase 2 on every rerun. It is never a profile change: do not write it into the profile.
 - If nothing changed, say so and write nothing.
 - Write only after the user confirms the diff.
 
@@ -275,6 +300,7 @@ End with:
 | Skills | Each pack skill: installed, kept, replaced (backup path), failed (reason) or not attempted (after a failure). "Installed" only when the on-disk check passed. After any failure, the user's commands again |
 | Profile | Path, created / updated / unchanged / not written (denied, text printed), and every `unknown` left in it |
 | Backups | Paths, or none. They are plain files: the user decides whether to commit, ignore or delete them |
+| May conflict | Each flagged path in one line with its signals, left as is, and the "Tool names not checked" line if it applied. Omit the row when the plan had no "May conflict" block |
 | Hydrant connection | Whether Hydrant tools are available in this session. If none, point to the Connect section of the pack's README: <https://github.com/Background-Craft/hydrant-skills#connect> |
 | Next | Run `capture` or `refine` on an issue |
 
@@ -294,4 +320,5 @@ Hydrant workflow facts for this repository are in `.agents/hydrant-workflow.md`.
 - No existing skill overwritten without a named yes and a verified backup.
 - Profile has every section; nothing invented; no secrets or timestamps.
 - Rerun changed no existing line beyond its two exceptions, and wrote nothing when nothing moved.
+- AGENTS.md, CLAUDE.md and non-pack skills checked for older Hydrant guidance; hits listed as may conflict, none edited.
 - No AGENTS.md/CLAUDE.md edit, no key, no Hydrant write.
