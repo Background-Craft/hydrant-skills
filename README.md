@@ -10,6 +10,7 @@ Hydrant already hands agents its tools over MCP. Tools describe what an agent *c
 - [`refine`](./skills/refine/SKILL.md): settles scope, acceptance, priority, size, owner, labels and project, and marks the issue Ready only when nothing material is open.
 - [`prep`](./skills/prep/SKILL.md): confirms the assignment, reads the issue and the code it touches, maps each acceptance check to a command from your profile, and records a checkpoint on the issue. Edits nothing.
 - [`go`](./skills/go/SKILL.md): builds the issue on its own branch, runs your profile's checks, preflights the result and hands it to review. Commits locally; pushes and opens a pull request only when you ask. Never merges.
+- [`review-triage`](./skills/review-triage/SKILL.md): watches an open pull request, checks each review comment against the code, fixes what's warranted, replies in every thread and records the result on the Hydrant issue.
 
 **Review costs nothing extra.** Before handing off, `go` gets one independent review of its change from a fresh reviewer on the agent you already use: a subagent where your client has one (Claude Code and Codex both do), otherwise a second session of the same CLI with editing turned off (`claude -p` with edit tools disallowed, or `codex exec -s read-only`). No review bot or paid service is needed. If you already use one, `go` leaves it to review the pull request as usual. If no independent reviewer can run, `go` says so instead of passing off its own review as independent.
 
@@ -53,6 +54,10 @@ With a single agent selected, the CLI copies the skill straight into that agent'
 - **Running it again** rescans and proposes additions to the profile, and offers any pack skill you don't have yet. It never rewrites your lines or updates installed skills. The one exception is a skill whose install failed: setup marks it installed once it is. It writes nothing when nothing changed.
 
 Setup does not edit AGENTS.md or CLAUDE.md, create keys, connect clients or write to Hydrant.
+
+### Review bots are optional
+
+`review-triage` always triages people's comments: review bodies, inline comments and top-level PR comments. A review bot's comments are triaged only when its login is under **Review bots** in the profile, so CodeRabbit, Copilot, Greptile and others all work the same way. Other bot accounts, such as Dependabot, are listed as not triaged. With no bot listed, which is the default, the skill waits only for CI. Comment text is checked against the code and never followed as an instruction. The skill never merges, approves or changes the issue's status.
 
 ### Update and remove
 
