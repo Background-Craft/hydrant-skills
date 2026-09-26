@@ -1,0 +1,20 @@
+{
+  "name": "hydrant",
+  "interface": {
+    "displayName": "Hydrant"
+  },
+  "plugins": [
+    {
+      "name": "hydrant",
+      "source": {
+        "source": "local",
+        "path": "./plugins/hydrant"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    }
+  ]
+}

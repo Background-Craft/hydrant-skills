@@ -113,6 +113,26 @@ codex mcp add hydrant \
 
 Keep client approvals on. Hydrant's write tools declare their side effects; the skill tells the agent to write only what you asked for, and your client's prompt is the second lock.
 
+### Codex plugin
+
+One install gets Codex both halves: the Hydrant MCP server and the `hydrant` skill. It signs in with OAuth in your browser, so there's no key to paste anywhere.
+
+```sh
+codex plugin marketplace add Background-Craft/hydrant-skills
+codex plugin add hydrant@hydrant
+codex mcp login hydrant
+```
+
+Approve one workspace in the browser tab that opens. Check the workspace name before you click: the agent gets that one and no other. The CLI, desktop app and IDE extension share the install.
+
+The plugin carries the base `hydrant` skill only. The workflow pack stays a per-repository install through `hydrant-setup`, because it needs that repository's profile.
+
+- **Already ran `codex mcp add hydrant`?** Your entry wins and stays put. The plugin adds the skill and leaves your server alone, even when you remove the plugin.
+- **Update:** `codex plugin marketplace upgrade hydrant`, then `codex plugin add hydrant@hydrant` again.
+- **Remove:** `codex plugin remove hydrant@hydrant`, then `codex plugin marketplace remove hydrant` if you want the marketplace gone too. Other servers and plugins aren't touched.
+
+This is a plugin you install from this repository, not a listing in OpenAI's plugin directory. It isn't in the directory yet.
+
 ## What the skill does
 
 - Starts every task with `get_workspace` and states the workspace name and ID.
@@ -135,6 +155,7 @@ Keep client approvals on. Hydrant's write tools declare their side effects; the 
 
 | Skill | Hydrant MCP server |
 |---|---|
+| 0.3.0 | `hydrant` 0.1.0 |
 | 0.2.0 | `hydrant` 0.1.0 |
 | 0.1.0 | `hydrant` 0.1.0 |
 
@@ -144,7 +165,7 @@ The server reports its name and version when a client connects. Releases are git
 
 ## Contributing
 
-Issues and pull requests are open. Keep `skills/hydrant/SKILL.md` provider-neutral and short, and run `node scripts/validate-frontmatter.mjs` before pushing. Workspace policy belongs in your workspace; this file is not the place to legislate it.
+Issues and pull requests are open. Keep `skills/hydrant/SKILL.md` provider-neutral and short, and run `node scripts/validate-frontmatter.mjs` before pushing. The Codex plugin ships a copy of `skills/hydrant`, because Codex drops symlinks when it installs a plugin: after editing the skill, run `node scripts/check-plugin.mjs --write`. CI fails when the copy drifts. Workspace policy belongs in your workspace; this file is not the place to legislate it.
 
 ## License
 

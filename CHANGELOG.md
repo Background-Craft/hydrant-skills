@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.3.0 — unreleased
+
+- Codex plugin `hydrant@hydrant` in `plugins/hydrant/`: the Hydrant MCP server at `https://hydrant.dev/api/mcp` (OAuth, no keys) plus the base `hydrant` skill. The repository is its own marketplace (`.agents/plugins/marketplace.json`). Workflow pack skills stay per-repository installs through `hydrant-setup`.
+- The plugin ships a byte-identical copy of `skills/hydrant`, because Codex drops symlinks when it caches a plugin. `scripts/check-plugin.mjs` fails CI on drift, a missing manifest path, a non-canonical MCP URL or a token in `.mcp.json`; `--write` refreshes the copy.
+
 ## 0.2.0 — 2026-09-25
 
 The workflow pack: `hydrant-setup`, `capture`, `refine`, `prep`, `go`, `review-triage` and `ship`, built on the `hydrant` skill.
