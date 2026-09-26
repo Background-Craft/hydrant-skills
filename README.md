@@ -123,12 +123,14 @@ codex plugin add hydrant@hydrant
 codex mcp login hydrant
 ```
 
-Approve one workspace in the browser tab that opens. Check the workspace name before you click: the agent gets that one and no other. The CLI, desktop app and IDE extension share the install.
+Approve one workspace in the browser tab that opens. Check the workspace name before you click: the agent gets that one and no other.
 
 The plugin carries the base `hydrant` skill only. The workflow pack stays a per-repository install through `hydrant-setup`, because it needs that repository's profile.
 
 - **Already ran `codex mcp add hydrant`?** Your entry wins and stays put. The plugin adds the skill and leaves your server alone, even when you remove the plugin.
 - **Update:** `codex plugin marketplace upgrade hydrant`, then `codex plugin add hydrant@hydrant` again.
+- **Signed in to the wrong workspace?** `codex mcp logout hydrant`, then `codex mcp login hydrant`. `codex mcp remove` can't touch a server that a plugin brought.
+- **Also running `hydrant-setup`?** Let it install `hydrant` in the repository as well, because the pack's skills read it from the folder next door. Codex then sees two copies of one file, `hydrant` and `hydrant:hydrant`. Keep them on the same release.
 - **Remove:** `codex plugin remove hydrant@hydrant`, then `codex plugin marketplace remove hydrant` if you want the marketplace gone too. Other servers and plugins aren't touched.
 
 This is a plugin you install from this repository, not a listing in OpenAI's plugin directory. It isn't in the directory yet.

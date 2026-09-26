@@ -6,6 +6,9 @@
 
 import { cp, readFile, readdir, rm, stat } from "node:fs/promises";
 import { join } from "node:path";
+import { fileURLToPath } from "node:url";
+
+process.chdir(fileURLToPath(new URL("..", import.meta.url)));
 
 const SOURCE = "skills/hydrant";
 const PLUGIN = "plugins/hydrant";
@@ -66,7 +69,7 @@ if (!/^\d+\.\d+\.\d+$/.test(manifest.version ?? "")) errors.push(`${PLUGIN}: man
 const mcp = await json(join(PLUGIN, ".mcp.json"));
 const server = mcp.mcpServers?.hydrant;
 if (server?.url !== "https://hydrant.dev/api/mcp" || server?.type !== "http") errors.push(`${PLUGIN}/.mcp.json: hydrant must be type http at https://hydrant.dev/api/mcp`);
-if (/token|bearer|authorization|key/i.test(JSON.stringify(mcp))) errors.push(`${PLUGIN}/.mcp.json: no tokens or keys; the server signs in with OAuth`);
+if (Object.keys(server ?? {}).some(k => k !== "type" && k !== "url") || /token|bearer|authorization|key/i.test(JSON.stringify(mcp))) errors.push(`${PLUGIN}/.mcp.json: only type and url, no tokens, keys or headers; the server signs in with OAuth`);
 
 // 4. The repo marketplace resolves to the plugin.
 const market = await json(".agents/plugins/marketplace.json");
