@@ -1,0 +1,10 @@
+{
+  "name": "hydrant",
+  "version": "0.3.0",
+  "description": "Hydrant's MCP server and the hydrant skill: read a Hydrant workspace before touching it, write with request IDs and versions, read back, and report what actually happened.",
+  "author": { "name": "Background Craft LLC", "email": "bots@hydrant.dev", "url": "https://hydrant.dev" },
+  "homepage": "https://hydrant.dev/help/agents/connect",
+  "repository": "https://github.com/Background-Craft/hydrant-skills",
+  "license": "MIT",
+  "keywords": ["hydrant", "issues", "project-management", "mcp"]
+}

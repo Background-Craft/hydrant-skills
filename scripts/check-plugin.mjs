@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// The Codex plugin in plugins/hydrant/ ships a copy of skills/hydrant, because
+// The Codex and Claude Code plugin in plugins/hydrant/ ships a copy of skills/hydrant, because
 // Codex drops symlinks when it caches a plugin. skills/hydrant is the source.
 //   node scripts/check-plugin.mjs          fail on drift or a broken manifest
 //   node scripts/check-plugin.mjs --write  refresh the copy from the source
@@ -75,6 +75,14 @@ if (Object.keys(server ?? {}).some(k => k !== "type" && k !== "url") || /token|b
 const market = await json(".agents/plugins/marketplace.json");
 for (const plugin of market.plugins ?? []) {
   if (!(await exists(join(plugin.source?.path ?? "", ".codex-plugin/plugin.json")))) errors.push(`.agents/plugins/marketplace.json: ${plugin.name} has no plugin at ${plugin.source?.path}`);
+}
+
+// 5. The Claude Code manifests match: same plugin, same version, and the marketplace resolves to it.
+const claude = await json(join(PLUGIN, ".claude-plugin/plugin.json"));
+if (claude.name !== manifest.name || claude.version !== manifest.version) errors.push(`${PLUGIN}/.claude-plugin/plugin.json: name and version must match the Codex manifest (${manifest.name} ${manifest.version})`);
+const claudeMarket = await json(".claude-plugin/marketplace.json");
+for (const plugin of claudeMarket.plugins ?? []) {
+  if (!(await exists(join(plugin.source ?? "", ".claude-plugin/plugin.json")))) errors.push(`.claude-plugin/marketplace.json: ${plugin.name} has no plugin at ${plugin.source}`);
 }
 
 if (errors.length) {

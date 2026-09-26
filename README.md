@@ -113,6 +113,26 @@ codex mcp add hydrant \
 
 Keep client approvals on. Hydrant's write tools declare their side effects; the skill tells the agent to write only what you asked for, and your client's prompt is the second lock.
 
+### Claude Code plugin
+
+One install gets Claude Code both halves: the Hydrant MCP server and the `hydrant` skill. It signs in with OAuth in your browser, so there's no key to paste anywhere.
+
+```sh
+claude plugin marketplace add Background-Craft/hydrant-skills
+claude plugin install hydrant@hydrant
+```
+
+Then run `/mcp` inside Claude Code, choose `plugin:hydrant:hydrant` and Authenticate. Approve one workspace in the browser tab that opens. Check the workspace name before you click: the agent gets that one, at your role, and no other. Until then `claude mcp list` says `Needs authentication`, which is accurate, not broken.
+
+The plugin carries the base `hydrant` skill only. The workflow pack stays a per-repository install through `hydrant-setup`, because it needs that repository's profile.
+
+- **Already added Hydrant with `claude mcp add` or a `.mcp.json`?** Your entry wins and stays put. Claude Code skips the plugin's copy of the same server, the plugin still adds the skill, and removing the plugin leaves your entry alone.
+- **Update:** `claude plugin marketplace update hydrant`, then `claude plugin update hydrant@hydrant`, then restart Claude Code.
+- **Pause:** `claude plugin disable hydrant@hydrant` takes the server and skill out of new sessions; `enable` brings them back.
+- **Remove:** `claude plugin uninstall hydrant@hydrant`, then `claude plugin marketplace remove hydrant` if you want the marketplace gone too. Other servers, plugins and settings aren't touched. The workspace approval stays in Hydrant until you revoke it under **Settings › Agents**.
+
+This is a plugin you install from this repository, not a listing in Anthropic's plugin directory. It isn't in the directory yet.
+
 ### Codex plugin
 
 One install gets Codex both halves: the Hydrant MCP server and the `hydrant` skill. It signs in with OAuth in your browser, so there's no key to paste anywhere.
