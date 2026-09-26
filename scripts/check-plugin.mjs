@@ -81,9 +81,8 @@ for (const plugin of market.plugins ?? []) {
 const claude = await json(join(PLUGIN, ".claude-plugin/plugin.json"));
 if (claude.name !== manifest.name || claude.version !== manifest.version) errors.push(`${PLUGIN}/.claude-plugin/plugin.json: name and version must match the Codex manifest (${manifest.name} ${manifest.version})`);
 const claudeMarket = await json(".claude-plugin/marketplace.json");
-for (const plugin of claudeMarket.plugins ?? []) {
-  if (!(await exists(join(plugin.source ?? "", ".claude-plugin/plugin.json")))) errors.push(`.claude-plugin/marketplace.json: ${plugin.name} has no plugin at ${plugin.source}`);
-}
+const claudeEntry = (claudeMarket.plugins ?? []).find(plugin => plugin.name === manifest.name);
+if (typeof claudeEntry?.source !== "string" || !(await exists(join(claudeEntry.source, ".claude-plugin/plugin.json")))) errors.push(`.claude-plugin/marketplace.json: needs a ${manifest.name} entry whose source is the path of a plugin with .claude-plugin/plugin.json`);
 
 if (errors.length) {
   console.error(errors.join("\n") + "\nRun node scripts/check-plugin.mjs --write after editing skills/hydrant.");
