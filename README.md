@@ -127,9 +127,9 @@ Approve one workspace in the browser tab that opens. Check the workspace name be
 
 The plugin carries the base `hydrant` skill only. The workflow pack stays a per-repository install through `hydrant-setup`, because it needs that repository's profile.
 
-- **Already ran `codex mcp add hydrant`?** Your entry wins and stays put. The plugin adds the skill and leaves your server alone, even when you remove the plugin.
+- **Already ran `codex mcp add hydrant`?** Your entry stays put. The plugin adds the skill and leaves your server alone, even when you remove the plugin.
 - **Update:** `codex plugin marketplace upgrade hydrant`, then `codex plugin add hydrant@hydrant` again.
-- **Signed in to the wrong workspace?** `codex mcp logout hydrant`, then `codex mcp login hydrant`. `codex mcp remove` can't touch a server that a plugin brought.
+- **Signed in to the wrong workspace?** Revoke that connection in Hydrant under **Settings › Agents › Access** first, so it stops holding a slot. Then run `codex mcp logout hydrant` and `codex mcp login hydrant`. `codex mcp remove` can't touch a server that a plugin brought.
 - **Also running `hydrant-setup`?** Let it install `hydrant` in the repository as well, because the pack's skills read it from the folder next door. Codex then sees two copies of one file, `hydrant` and `hydrant:hydrant`. Keep them on the same release.
 - **Remove:** `codex plugin remove hydrant@hydrant`, then `codex plugin marketplace remove hydrant` if you want the marketplace gone too. Other servers and plugins aren't touched.
 
