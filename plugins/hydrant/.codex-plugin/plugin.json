@@ -1,0 +1,37 @@
+{
+  "name": "hydrant",
+  "version": "0.3.0",
+  "description": "Hydrant's MCP server and the hydrant skill: read a Hydrant workspace before touching it, write with request IDs and versions, read back, and report what actually happened.",
+  "author": {
+    "name": "Background Craft LLC",
+    "email": "bots@hydrant.dev",
+    "url": "https://hydrant.dev"
+  },
+  "homepage": "https://hydrant.dev/help/agents/connect",
+  "repository": "https://github.com/Background-Craft/hydrant-skills",
+  "license": "MIT",
+  "keywords": ["hydrant", "issues", "project-management", "mcp"],
+  "skills": "./skills/",
+  "mcpServers": "./.mcp.json",
+  "interface": {
+    "displayName": "Hydrant",
+    "shortDescription": "Issue tracking your agent can't sweet-talk",
+    "longDescription": "Connects Codex to one Hydrant workspace you approve in the browser, with no more access than your role. The hydrant skill carries the house rules: read the whole thread first, keep request IDs and versions on every write, read it back, and say what actually happened.",
+    "developerName": "Background Craft LLC",
+    "category": "Productivity",
+    "capabilities": ["Read", "Write"],
+    "websiteURL": "https://hydrant.dev",
+    "privacyPolicyURL": "https://hydrant.dev/privacy",
+    "termsOfServiceURL": "https://hydrant.dev/terms",
+    "supportURL": "https://hydrant.dev/help/agents/troubleshooting",
+    "defaultPrompt": [
+      "What's assigned to me in Hydrant, and what's blocking it?",
+      "File a Hydrant issue for this bug, after checking for duplicates.",
+      "Summarize the discussion on this Hydrant issue."
+    ],
+    "brandColor": "#FF6B2C",
+    "composerIcon": "./assets/composer-icon.svg",
+    "logo": "./assets/logo.png",
+    "screenshots": []
+  }
+}

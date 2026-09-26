@@ -13,7 +13,9 @@
     "url": "https://github.com/Background-Craft/hydrant-skills/issues"
   },
   "scripts": {
-    "validate": "node scripts/validate-frontmatter.mjs"
+    "validate": "node scripts/validate-frontmatter.mjs",
+    "check-plugin": "node scripts/check-plugin.mjs",
+    "sync-plugin": "node scripts/check-plugin.mjs --write"
   },
   "engines": {
     "node": ">=20"

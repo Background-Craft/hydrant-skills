@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "hydrant": {
+      "type": "http",
+      "url": "https://hydrant.dev/api/mcp"
+    }
+  }
+}
