@@ -129,6 +129,8 @@ The plugin carries the base `hydrant` skill only. The workflow pack stays a per-
 - **Already ran `claude mcp add hydrant --scope user`?** Your entry wins and stays put. Claude Code skips the plugin's copy of the same server, the plugin still adds the skill, and removing the plugin leaves your entry alone.
 - **Hydrant in a project `.mcp.json`?** That entry doesn't displace the plugin's, so you can end up with two Hydrant servers. Keep one: drop the entry, or skip the plugin.
 - **Update:** `claude plugin marketplace update hydrant`, then `claude plugin update hydrant@hydrant`, then restart Claude Code.
+- **Signed in to the wrong workspace?** `claude mcp logout plugin:hydrant:hydrant`, then `/mcp` and Authenticate again. `claude mcp remove` can't touch a server that a plugin brought.
+- **Also running `hydrant-setup`?** Let it install `hydrant` in the repository as well, because the pack's skills read it from the folder next door. Claude Code then sees two copies of one file, `hydrant` and `hydrant:hydrant`. Keep them on the same release.
 - **Pause:** `claude plugin disable hydrant@hydrant` takes the server and skill out of new sessions; `enable` brings them back.
 - **Remove:** `claude plugin uninstall hydrant@hydrant`, then `claude plugin marketplace remove hydrant` if you want the marketplace gone too. Other servers, plugins and settings aren't touched. The workspace approval stays in Hydrant until you revoke it under **Settings › Agents**.
 
