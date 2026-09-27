@@ -1,0 +1,15 @@
+{
+  "name": "hydrant",
+  "owner": { "name": "Background Craft LLC", "email": "bots@hydrant.dev" },
+  "metadata": {
+    "description": "Hydrant for Claude Code: the MCP server and the hydrant skill, in one plugin."
+  },
+  "plugins": [
+    {
+      "name": "hydrant",
+      "source": "./plugins/hydrant",
+      "description": "Connects Claude Code to one Hydrant workspace you approve in the browser, and brings the hydrant skill: read first, write with receipts, read back, say what actually happened.",
+      "category": "productivity"
+    }
+  ]
+}

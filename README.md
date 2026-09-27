@@ -113,6 +113,31 @@ codex mcp add hydrant \
 
 Keep client approvals on. Hydrant's write tools declare their side effects; the skill tells the agent to write only what you asked for, and your client's prompt is the second lock.
 
+### Claude Code plugin
+
+Your agent has confidence. Give it a paper trail.
+
+The plugin gives Claude Code a connection to Hydrant and the `hydrant` skill: read the context, do the requested work, check the result, and bring receipts. “Done” is a claim. We'd like some evidence. Sign in with OAuth in your browser; no API key to paste into a file.
+
+```sh
+claude plugin marketplace add Background-Craft/hydrant-skills
+claude plugin install hydrant@hydrant
+```
+
+Then run `/mcp` inside Claude Code, choose `plugin:hydrant:hydrant` and Authenticate. Approve one workspace in the browser tab that opens. Check the workspace name before you click: the agent gets that one, at your role, and no other. Until you finish signing in, `claude mcp list` shows `Needs authentication`.
+
+The plugin includes the base `hydrant` skill. Install the workflow pack separately with `hydrant-setup` so it can use your repository's build, review and release rules.
+
+- **Already ran `claude mcp add hydrant --scope user`?** Your entry stays put. `claude mcp list` shows only your `hydrant`, not the plugin's copy of the same URL; the plugin still adds the skill, and removing the plugin leaves your entry alone.
+- **Hydrant in a project `.mcp.json`?** That entry doesn't displace the plugin's, so you can end up with two Hydrant servers. Keep one: drop the entry, or skip the plugin.
+- **Update:** `claude plugin marketplace update hydrant`, then `claude plugin update hydrant@hydrant`, then restart Claude Code.
+- **Signed in to the wrong workspace?** Revoke that connection in Hydrant under **Settings › Agents › Access** first, so it stops holding a slot. Then run `claude mcp logout plugin:hydrant:hydrant`, and `/mcp` → Authenticate again. `claude mcp remove` can't touch a server that a plugin brought.
+- **Also running `hydrant-setup`?** Let it install `hydrant` in the repository as well, because the pack's skills read it from the folder next door. Claude Code then sees two copies of one file, `hydrant` and `hydrant:hydrant`. Keep them on the same release.
+- **Pause:** `claude plugin disable hydrant@hydrant` takes the server and skill out of new sessions; `enable` brings them back.
+- **Remove:** `claude plugin uninstall hydrant@hydrant`, then `claude plugin marketplace remove hydrant` if you want the marketplace gone too. Other servers, plugins and settings aren't touched. The workspace approval stays in Hydrant until you revoke it under **Settings › Agents**.
+
+Install from this repository's marketplace. Hydrant is not yet listed in Anthropic's plugin directory; that submission is separate.
+
 ### Codex plugin
 
 One install gets Codex both halves: the Hydrant MCP server and the `hydrant` skill. It signs in with OAuth in your browser, so there's no key to paste anywhere.

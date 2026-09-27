@@ -1,6 +1,11 @@
 # Changelog
 
-## 0.3.0 — unreleased
+## 0.3.1 — 2026-09-27
+
+- Claude Code plugin, same `plugins/hydrant/`: `claude plugin marketplace add Background-Craft/hydrant-skills`, then `claude plugin install hydrant@hydrant`. It bundles the `hydrant` skill and Hydrant's remote MCP server with browser OAuth. It adds no hooks or local processes, and no key goes in a file. Its marketplace manifest is `.claude-plugin/marketplace.json`; the plugin manifest is `plugins/hydrant/.claude-plugin/plugin.json`, versioned with the Codex one.
+- Added a plugin-folder README with setup, permissions and removal instructions for the Anthropic directory submission.
+
+## 0.3.0 — 2026-09-26
 
 - Codex plugin `hydrant@hydrant` in `plugins/hydrant/`: the Hydrant MCP server at `https://hydrant.dev/api/mcp` (OAuth, no keys) plus the base `hydrant` skill. The repository is its own marketplace (`.agents/plugins/marketplace.json`). Workflow pack skills stay per-repository installs through `hydrant-setup`.
 - The plugin ships a byte-identical copy of `skills/hydrant`, because Codex drops symlinks when it caches a plugin. `scripts/check-plugin.mjs` fails CI on drift, a missing manifest path, a non-canonical MCP URL or a token in `.mcp.json`; `--write` refreshes the copy.
