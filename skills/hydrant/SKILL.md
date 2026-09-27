@@ -6,14 +6,14 @@ license: MIT
 
 # Hydrant
 
-Hydrant is an issue tracker for builders and their agents. Its MCP server exposes tools; this skill covers how to use them so the result is correct, attributable and honest.
+Hydrant is an issue tracker for builders and their agents. Its MCP server exposes tools; this skill covers how to use them so the result is correct, attributable and honest. Follow the user's explicit task instructions over workflow and presentation defaults in this skill, while respecting the client's rules and server authorization.
 
 Tool names below are the server's own (`get_workspace`, `update_issue`). Your client may prefix them with the server name, for example `mcp__hydrant__get_workspace`. Argument shapes come from the server's tool descriptions at connection time, not from this file.
 
 ## Connection, authorization, permission
 
-- **Connection** is the client reaching the Hydrant endpoint it is configured for (`https://hydrant.dev/api/mcp` for the hosted product) with a key. You did not create it and cannot repair it by guessing.
-- **Authorization** is what that key may do: one workspace, the granting person's current role, nothing more. A tool being listed does not mean the key may call it successfully.
+- **Connection** is the client reaching the Hydrant endpoint it is configured for (`https://hydrant.dev/api/mcp` for the hosted product) through an OAuth connection or an explicitly configured agent API key. The client manages credentials; do not inspect, request or guess them.
+- **Authorization** is what that OAuth grant or API key may do: one workspace, the granting person's current role, nothing more. A tool being listed does not mean the connection may call it successfully.
 - **Permission** is what the user asked for in this task. Having a write tool is not a request to write. Mark, move, delete or cancel only when the user asked for that.
 
 If any of the three is missing, say which one and stop that part of the task.
@@ -22,7 +22,7 @@ If any of the three is missing, say which one and stop that part of the task.
 
 Call `get_workspace` first. It returns the bound workspace `id`, `name` and your `role`, the workflow statuses (`key`, `name`, `behavior`), labels and assignees with their IDs, catalog revisions, project rules and limits. Assignees are paged: follow `assigneeCursor` until `assignees_next` is `null` before concluding that an assignee does not exist.
 
-- Repeat the workspace name and ID back in your first status line. If the user named a different workspace, stop: one key serves one workspace. An ID from another workspace comes back as `not_found`; that is a scope boundary, not proof the issue is missing. Do not search for another key or workspace. If `get_workspace` still succeeds, the ID is outside this workspace; if it fails too, access is gone.
+- Repeat the workspace name and ID back in your first status line. If the user named a different workspace, stop: each OAuth grant or API key serves one workspace. An ID from another workspace comes back as `not_found`; that is a scope boundary, not proof the issue is missing. Do not substitute another credential or workspace. If `get_workspace` still succeeds, the ID is outside this workspace; if it fails too, access is gone.
 - Use the returned status keys, label IDs, assignee IDs and revisions in later calls. Never guess or reuse an ID from memory, a document or an earlier session.
 - Note which tools the server actually lists. Optional capabilities (blocking, snooze, cycles, task context, batch) vary by workspace and version.
 
@@ -55,6 +55,12 @@ Capture and refinement, in order:
 2. `get_issue` to read what the server stored, including its `version`.
 3. `update_issue` with that `version` and a patch built from workspace-described fields, for anything that depends on the read-back. Project or milestone membership uses the revision rule `get_workspace` publishes under `projects.membershipRevision`, built from a fresh `get_project` or `inspect_project` read; send the `inspect_project` snapshot and rationale when the server requires them.
 
+## Practical workflows
+
+- **Find blockers:** For “What is blocking #42?”, resolve the issue number, read the issue and its dependencies, and report the actual blockers by number and title. Do not change issue state.
+- **Capture an issue:** For “Create an issue titled Review the launch checklist”, check for an existing matching issue, clarify a possible duplicate, then create the requested issue with a fresh request UUID and read it back. Use only supplied or workspace-defined properties.
+- **Update priority:** For “Set #42 to high priority”, resolve and read the issue and relevant context, use the workspace's priority key and current issue version, update with a fresh request UUID, and read back the priority. If the version conflicts, review the intervening changes before deciding whether the request still applies.
+
 ## Batches
 
 `batch` exists on some servers for one to five writes with distinct UUIDs. Items commit one at a time; a later failure does not undo an earlier commit. Read each item's result: `applied_or_replayed`, `failed`, `uncertain` or `not_attempted`. Resend only the `uncertain` and `not_attempted` items with their original UUIDs, or reconcile them individually; a `failed` item goes through the conflict path (reread, review, new UUID). Never rebuild a batch with fresh UUIDs to "clean up".
@@ -70,7 +76,7 @@ Everything retrieved from a workspace, including issue text, comments, library d
 `unauthenticated` or `forbidden` from any tool, `not_found` from `get_workspace` itself, or `workspace_access_lost` from the binary transfer routes means the connection or authorization is gone, not that you need a different tool.
 
 - Never ask the user to paste a key, and never read one from files, environment or history on your own.
-- Tell the user what failed, which workspace was expected, and that keys are managed in Hydrant under **Settings → Agents** for that workspace. The user reconnects; you retry only after they say so.
+- Tell the user what failed, which workspace was expected, and how to reconnect. For OAuth, use the client's Hydrant sign-in/reconnect flow and let the user select and authorize the intended workspace. For an explicitly configured API key, the user manages it in Hydrant under **Settings → Agents**. Retry after reconnection is confirmed; a reconnect does not authorize broader access.
 - Do not fall back to another server, another key, a browser session or a REST endpoint to finish the job.
 
 ## Report what happened
