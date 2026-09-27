@@ -2,6 +2,8 @@
 
 ## 0.3.0 — unreleased
 
+- Cursor manifests reuse the existing `plugins/hydrant/` skill, logo and OAuth MCP configuration. Local discovery is verified; full OAuth acceptance and both directory submissions remain pending.
+
 - Codex plugin `hydrant@hydrant` in `plugins/hydrant/`: the Hydrant MCP server at `https://hydrant.dev/api/mcp` (OAuth, no keys) plus the base `hydrant` skill. The repository is its own marketplace (`.agents/plugins/marketplace.json`). Workflow pack skills stay per-repository installs through `hydrant-setup`.
 - The plugin ships a byte-identical copy of `skills/hydrant`, because Codex drops symlinks when it caches a plugin. `scripts/check-plugin.mjs` fails CI on drift, a missing manifest path, a non-canonical MCP URL or a token in `.mcp.json`; `--write` refreshes the copy.
 

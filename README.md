@@ -135,6 +135,12 @@ The plugin carries the base `hydrant` skill only. The workflow pack stays a per-
 
 This is a plugin you install from this repository, not a listing in OpenAI's plugin directory. It isn't in the directory yet.
 
+### Cursor plugin
+
+The ticket already exists. Give your agent the context. The [Cursor package](./plugins/hydrant/CURSOR.md) pairs the same base skill with the same remote MCP endpoint. It does not install the workflow pack.
+
+Local package discovery has been checked in Cursor 3.21.16 on macOS. Fresh-profile OAuth and synthetic writes still need verification; neither Cursor Marketplace nor cursor.directory has received a submission for this package. Follow the package guide for direct installation, existing-server handling and removal.
+
 ## What the skill does
 
 - Starts every task with `get_workspace` and states the workspace name and ID.
@@ -167,7 +173,7 @@ The server reports its name and version when a client connects. Releases are git
 
 ## Contributing
 
-Issues and pull requests are open. Keep `skills/hydrant/SKILL.md` provider-neutral and short, and run `node scripts/validate-frontmatter.mjs` before pushing. The Codex plugin ships a copy of `skills/hydrant`, because Codex drops symlinks when it installs a plugin: after editing the skill, run `node scripts/check-plugin.mjs --write`. CI fails when the copy drifts. Workspace policy belongs in your workspace; this file is not the place to legislate it.
+Issues and pull requests are open. Keep `skills/hydrant/SKILL.md` provider-neutral and short, and run `node scripts/validate-frontmatter.mjs` before pushing. The shared Codex/Cursor plugin ships a copy of `skills/hydrant`, because Codex drops symlinks when it installs a plugin: after editing the skill, run `node scripts/check-plugin.mjs --write`. CI fails when the copy drifts. Workspace policy belongs in your workspace; this file is not the place to legislate it.
 
 ## License
 

@@ -1,0 +1,21 @@
+{
+  "name": "hydrant",
+  "version": "0.3.0",
+  "description": "Bring Hydrant issues into Cursor. Read the work, make the changes you were asked for, and leave receipts.",
+  "author": {
+    "name": "Background Craft LLC",
+    "email": "bots@hydrant.dev"
+  },
+  "license": "MIT",
+  "logo": "assets/logo.png",
+  "skills": "./skills/",
+  "mcpServers": "./.mcp.json",
+  "homepage": "https://hydrant.dev/help/agents/connect",
+  "repository": "https://github.com/Background-Craft/hydrant-skills",
+  "keywords": [
+    "hydrant",
+    "issues",
+    "project-management",
+    "mcp"
+  ]
+}

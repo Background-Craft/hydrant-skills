@@ -21,5 +21,5 @@ jobs:
           node-version: "20"
       - name: Validate
         run: node scripts/validate-frontmatter.mjs
-      - name: Check the Codex plugin
+      - name: Check the Codex and Cursor plugin
         run: node scripts/check-plugin.mjs
