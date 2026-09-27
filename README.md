@@ -139,7 +139,7 @@ This is a plugin you install from this repository, not a listing in OpenAI's plu
 
 The ticket already exists. Give your agent the context. The [Cursor package](./plugins/hydrant/CURSOR.md) pairs the same base skill with the same remote MCP endpoint. It does not install the workflow pack.
 
-Local package discovery has been checked in Cursor 3.21.16 on macOS. Desktop OAuth is currently blocked by callback registration compatibility; synthetic writes remain unverified; neither Cursor Marketplace nor cursor.directory has received a submission for this package. Follow the package guide for direct installation, existing-server handling and removal.
+Local package discovery and desktop OAuth have been checked in Cursor 3.21.16 on macOS against Hydrant v2026.09.27.5. The reviewer-account test verified workspace identity, synthetic issue creation/read-back and denial after revocation. Neither Cursor Marketplace nor cursor.directory has received a submission for this package. Follow the package guide for direct installation, existing-server handling and removal.
 
 ## What the skill does
 
