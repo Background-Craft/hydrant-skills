@@ -83,6 +83,14 @@ Not ours. The skills CLI records anonymous install events that include the publi
 
 ## Connect
 
+### Cline and other remote MCP clients
+
+Connect to `https://hydrant.dev/api/mcp` using Streamable HTTP. Clients with remote OAuth support open Hydrant in your browser so you can choose a workspace and grant access. No local server required.
+
+Follow the [Cline setup guide](./llms-install.md), then verify the workspace with a read before asking your agent to change anything. The [400×400 Hydrant logo](./logo-400.png) is available for directory listings. This repository contains skills and client setup; it does not contain the hosted server's source.
+
+### API-key connections
+
 Three things that are not the same: a **connection** (the client reaches the server), **authorization** (what the key may do, one workspace) and **permission** (what you asked for in this task). The skill keeps them apart. So should you.
 
 The skill assumes a connection already exists. Keys are created in Hydrant under **Settings → Agents** for one workspace; a key never exceeds the role of the person who made it and stops working when they leave the workspace.
