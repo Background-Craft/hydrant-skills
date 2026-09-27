@@ -113,6 +113,31 @@ codex mcp add hydrant \
 
 Keep client approvals on. Hydrant's write tools declare their side effects; the skill tells the agent to write only what you asked for, and your client's prompt is the second lock.
 
+### Claude Code plugin
+
+Your agent has confidence. Give it a paper trail.
+
+The plugin gives Claude Code a connection to Hydrant and the `hydrant` skill: read the context, do the requested work, check the result, and bring receipts. “Done” is a claim. We'd like some evidence. Sign in with OAuth in your browser; no API key to paste into a file.
+
+```sh
+claude plugin marketplace add Background-Craft/hydrant-skills
+claude plugin install hydrant@hydrant
+```
+
+Then run `/mcp` inside Claude Code, choose `plugin:hydrant:hydrant` and Authenticate. Approve one workspace in the browser tab that opens. Check the workspace name before you click: the agent gets that one, at your role, and no other. Until you finish signing in, `claude mcp list` shows `Needs authentication`.
+
+The plugin includes the base `hydrant` skill. Install the workflow pack separately with `hydrant-setup` so it can use your repository's build, review and release rules.
+
+- **Already ran `claude mcp add hydrant --scope user`?** Your entry stays put. `claude mcp list` shows only your `hydrant`, not the plugin's copy of the same URL; the plugin still adds the skill, and removing the plugin leaves your entry alone.
+- **Hydrant in a project `.mcp.json`?** That entry doesn't displace the plugin's, so you can end up with two Hydrant servers. Keep one: drop the entry, or skip the plugin.
+- **Update:** `claude plugin marketplace update hydrant`, then `claude plugin update hydrant@hydrant`, then restart Claude Code.
+- **Signed in to the wrong workspace?** Revoke that connection in Hydrant under **Settings › Agents › Access** first, so it stops holding a slot. Then run `claude mcp logout plugin:hydrant:hydrant`, and `/mcp` → Authenticate again. `claude mcp remove` can't touch a server that a plugin brought.
+- **Also running `hydrant-setup`?** Let it install `hydrant` in the repository as well, because the pack's skills read it from the folder next door. Claude Code then sees two copies of one file, `hydrant` and `hydrant:hydrant`. Keep them on the same release.
+- **Pause:** `claude plugin disable hydrant@hydrant` takes the server and skill out of new sessions; `enable` brings them back.
+- **Remove:** `claude plugin uninstall hydrant@hydrant`, then `claude plugin marketplace remove hydrant` if you want the marketplace gone too. Other servers, plugins and settings aren't touched. The workspace approval stays in Hydrant until you revoke it under **Settings › Agents**.
+
+Install from this repository's marketplace. Hydrant is not yet listed in Anthropic's plugin directory; that submission is separate.
+
 ### Codex plugin
 
 One install gets Codex both halves: the Hydrant MCP server and the `hydrant` skill. It signs in with OAuth in your browser, so there's no key to paste anywhere.
@@ -137,7 +162,7 @@ This is a plugin you install from this repository, not a listing in OpenAI's plu
 
 ### Gemini CLI extension
 
-The Gemini extension is **unreleased**. For a local preview, build the generic archive, extract it to a temporary directory, and install that extracted directory with Gemini's normal confirmation prompt:
+For a local preview, build the generic archive, extract it to a temporary directory, and install that extracted directory with Gemini's normal confirmation prompt:
 
 ```sh
 node scripts/package-gemini-extension.mjs
@@ -148,13 +173,13 @@ gemini extensions install "$preview_dir"
 
 Do not install, link, or point Gemini at this repository root: Gemini loads every `skills/` subdirectory, which includes the repository workflow pack. The release archive deliberately contains only `skills/hydrant/`, its `agents/openai.yaml` dependency, `LICENSE`, and the root `gemini-extension.json` manifest.
 
-After an approved `v0.3.1` GitHub Release makes that generic archive its sole asset and it is the latest release, install the released extension with:
+Install the Gemini extension from the latest GitHub Release (v0.3.2 or later):
 
 ```sh
 gemini extensions install https://github.com/Background-Craft/hydrant-skills
 ```
 
-The GitHub Release must include the generic base-only archive as its sole asset for this command to be a safe default. It is not an install command until that release exists. A pinned `--ref` stays pinned when you update. To leave a pin, uninstall `hydrant` and reinstall without `--ref` after checking the latest approved release.
+The GitHub Release must include the generic base-only archive as its sole asset for this command to be a safe default. A pinned `--ref` stays pinned when you update. To leave a pin, uninstall `hydrant` and reinstall without `--ref` after checking the latest approved release.
 
 The extension defines one server, `hydrant`, at `https://hydrant.dev/api/mcp`. Start Gemini and use `/mcp auth hydrant` to approve the OAuth browser flow; then call `get_workspace` and confirm its name and ID before doing any work. Cancel the browser flow if the workspace is wrong. To change workspaces, revoke Hydrant access under **Settings → Agents → Access**, restart Gemini, and run `/mcp auth hydrant` again.
 
@@ -191,6 +216,7 @@ Uninstalling removes the extension only; it does not revoke its Hydrant OAuth ac
 
 | Skill | Hydrant MCP server |
 |---|---|
+| 0.3.2 | `hydrant` 0.1.0 |
 | 0.3.1 | `hydrant` 0.1.0 |
 | 0.3.0 | `hydrant` 0.1.0 |
 | 0.2.0 | `hydrant` 0.1.0 |

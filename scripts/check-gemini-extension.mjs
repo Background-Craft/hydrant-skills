@@ -28,7 +28,7 @@ const manifest = JSON.parse(await readFile("gemini-extension.json", "utf8"));
 const server = manifest.mcpServers?.hydrant;
 const allowedManifestKeys = ["description", "mcpServers", "name", "version"];
 if (Object.keys(manifest).sort().join() !== allowedManifestKeys.join()) errors.push("gemini-extension.json: contains unsupported extension behavior");
-if (manifest.name !== "hydrant" || manifest.version !== "0.3.1") errors.push("gemini-extension.json: expected hydrant 0.3.1");
+if (manifest.name !== "hydrant" || manifest.version !== "0.3.2") errors.push("gemini-extension.json: expected hydrant 0.3.2");
 if (server?.httpUrl !== "https://hydrant.dev/api/mcp" || Object.keys(server ?? {}).join() !== "httpUrl") errors.push("gemini-extension.json: hydrant must contain only the canonical httpUrl");
 if (Object.keys(manifest.mcpServers ?? {}).join() !== "hydrant") errors.push("gemini-extension.json: expected only the hydrant MCP server");
 
