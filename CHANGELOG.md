@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.3.3 — 2026-09-27
+
+- Exclude macOS metadata from the Gemini release archive and validate it without silently consuming AppleDouble files.
+
 ## 0.3.2 — 2026-09-27
 
 - Gemini CLI extension: `gemini-extension.json` exposes the canonical Hydrant streamable HTTP MCP endpoint and the base `hydrant` skill. `node scripts/package-gemini-extension.mjs` creates the generic GitHub Release archive; `node scripts/check-gemini-extension.mjs` verifies its manifest, inventory and byte-identical skill copy.

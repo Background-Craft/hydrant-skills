@@ -173,7 +173,7 @@ gemini extensions install "$preview_dir"
 
 Do not install, link, or point Gemini at this repository root: Gemini loads every `skills/` subdirectory, which includes the repository workflow pack. The release archive deliberately contains only `skills/hydrant/`, its `agents/openai.yaml` dependency, `LICENSE`, and the root `gemini-extension.json` manifest.
 
-Install the Gemini extension from the latest GitHub Release (v0.3.2 or later):
+Install the Gemini extension from the latest GitHub Release (v0.3.3 or later):
 
 ```sh
 gemini extensions install https://github.com/Background-Craft/hydrant-skills
@@ -216,6 +216,7 @@ Uninstalling removes the extension only; it does not revoke its Hydrant OAuth ac
 
 | Skill | Hydrant MCP server |
 |---|---|
+| 0.3.3 | `hydrant` 0.1.0 |
 | 0.3.2 | `hydrant` 0.1.0 |
 | 0.3.1 | `hydrant` 0.1.0 |
 | 0.3.0 | `hydrant` 0.1.0 |
