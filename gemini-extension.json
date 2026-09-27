@@ -1,6 +1,6 @@
 {
   "name": "hydrant",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "description": "Hydrant's MCP server and base workspace skill.",
   "mcpServers": {
     "hydrant": {

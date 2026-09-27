@@ -22,7 +22,7 @@ try {
     await cp(file, join(stage, file));
   }
   await mkdir(dirname(output), { recursive: true });
-  await run("tar", ["-C", stage, "-czf", output, "gemini-extension.json", "LICENSE", "skills"]);
+  await run("tar", ["--format=ustar", "-C", stage, "-czf", output, "gemini-extension.json", "LICENSE", "skills"], { env: { ...process.env, COPYFILE_DISABLE: "1" } });
   console.log(`Built ${output}.`);
 } catch (error) {
   await rm(output, { force: true });
