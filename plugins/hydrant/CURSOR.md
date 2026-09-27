@@ -2,7 +2,7 @@
 
 Bring the ticket into the conversation. This package contains Hydrant's remote MCP configuration and the base `hydrant` skill. It adds no hooks, local server or workflow-pack skills.
 
-**Verification status:** local discovery of the logo, version, one MCP server and one skill was observed in Cursor 3.21.16 on macOS. Cursor preserved an existing manual Hydrant server and left the plugin source disabled. A local version-change probe appeared in Cursor, and moving the test package out removed its plugin and skill while the manual server remained. Fresh-profile OAuth, synthetic writes and plugin-source disable/reconnect are still pending. The package has not been submitted to Cursor Marketplace or cursor.directory.
+**Verification status:** local discovery of the logo, version, one MCP server and one skill was observed in Cursor 3.21.16 on macOS. Cursor preserved an existing manual Hydrant server and left the plugin source disabled. A local version-change probe appeared in Cursor, and moving the test package out removed its plugin and skill while the manual server remained. The real desktop OAuth attempt currently fails during client registration: Hydrant rejects Cursor’s `cursor://anysphere.cursor-mcp/oauth/callback` redirect before sign-in. Callback compatibility is being addressed in Hydrant issue #385; synthetic writes and plugin-source disable/reconnect remain unverified. The package has not been submitted to Cursor Marketplace or cursor.directory.
 
 ## Install from a reviewed checkout
 
