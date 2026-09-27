@@ -160,6 +160,40 @@ The plugin carries the base `hydrant` skill only. The workflow pack stays a per-
 
 This is a plugin you install from this repository, not a listing in OpenAI's plugin directory. It isn't in the directory yet.
 
+### Gemini CLI extension
+
+For a local preview, build the generic archive, extract it to a temporary directory, and install that extracted directory with Gemini's normal confirmation prompt:
+
+```sh
+node scripts/package-gemini-extension.mjs
+preview_dir=$(mktemp -d)
+tar -xzf release/hydrant.tar.gz -C "$preview_dir"
+gemini extensions install "$preview_dir"
+```
+
+Do not install, link, or point Gemini at this repository root: Gemini loads every `skills/` subdirectory, which includes the repository workflow pack. The release archive deliberately contains only `skills/hydrant/`, its `agents/openai.yaml` dependency, `LICENSE`, and the root `gemini-extension.json` manifest.
+
+Install the Gemini extension from the latest GitHub Release (v0.3.2 or later):
+
+```sh
+gemini extensions install https://github.com/Background-Craft/hydrant-skills
+```
+
+The GitHub Release must include the generic base-only archive as its sole asset for this command to be a safe default. A pinned `--ref` stays pinned when you update. To leave a pin, uninstall `hydrant` and reinstall without `--ref` after checking the latest approved release.
+
+The extension defines one server, `hydrant`, at `https://hydrant.dev/api/mcp`. Start Gemini and use `/mcp auth hydrant` to approve the OAuth browser flow; then call `get_workspace` and confirm its name and ID before doing any work. Cancel the browser flow if the workspace is wrong. To change workspaces, revoke Hydrant access under **Settings → Agents → Access**, restart Gemini, and run `/mcp auth hydrant` again.
+
+Gemini keeps an existing user or workspace `mcpServers.hydrant` entry and gives it precedence over the extension server, so this extension does not overwrite or silently replace an existing configuration. A user or workspace skill named `hydrant` likewise takes precedence; the archive inventory stays limited to the base `hydrant` skill. Check `/mcp` after a restart to see the active server. Manage the extension itself with:
+
+```sh
+gemini extensions update hydrant
+gemini extensions disable hydrant
+gemini extensions enable hydrant
+gemini extensions uninstall hydrant
+```
+
+Uninstalling removes the extension only; it does not revoke its Hydrant OAuth access. Revoke access separately under **Settings → Agents → Access** before reconnecting another workspace.
+
 ## What the skill does
 
 - Starts every task with `get_workspace` and states the workspace name and ID.
@@ -182,6 +216,8 @@ This is a plugin you install from this repository, not a listing in OpenAI's plu
 
 | Skill | Hydrant MCP server |
 |---|---|
+| 0.3.2 | `hydrant` 0.1.0 |
+| 0.3.1 | `hydrant` 0.1.0 |
 | 0.3.0 | `hydrant` 0.1.0 |
 | 0.2.0 | `hydrant` 0.1.0 |
 | 0.1.0 | `hydrant` 0.1.0 |

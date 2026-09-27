@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.3.2 — 2026-09-27
+
+- Gemini CLI extension: `gemini-extension.json` exposes the canonical Hydrant streamable HTTP MCP endpoint and the base `hydrant` skill. `node scripts/package-gemini-extension.mjs` creates the generic GitHub Release archive; `node scripts/check-gemini-extension.mjs` verifies its manifest, inventory and byte-identical skill copy.
+
 ## 0.3.1 — 2026-09-27
 
 - Claude Code plugin, same `plugins/hydrant/`: `claude plugin marketplace add Background-Craft/hydrant-skills`, then `claude plugin install hydrant@hydrant`. It bundles the `hydrant` skill and Hydrant's remote MCP server with browser OAuth. It adds no hooks or local processes, and no key goes in a file. Its marketplace manifest is `.claude-plugin/marketplace.json`; the plugin manifest is `plugins/hydrant/.claude-plugin/plugin.json`, versioned with the Codex one.
