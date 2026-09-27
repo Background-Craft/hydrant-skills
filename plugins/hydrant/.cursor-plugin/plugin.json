@@ -1,6 +1,6 @@
 {
   "name": "hydrant",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "Bring Hydrant issues into Cursor. Read the work, make the changes you were asked for, and leave receipts.",
   "author": {
     "name": "Background Craft LLC",

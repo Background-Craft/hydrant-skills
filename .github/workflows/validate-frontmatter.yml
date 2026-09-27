@@ -21,5 +21,7 @@ jobs:
           node-version: "20"
       - name: Validate
         run: node scripts/validate-frontmatter.mjs
-      - name: Check the Codex and Cursor plugin
+      - name: Check the shared plugin
         run: node scripts/check-plugin.mjs
+      - name: Check the Gemini extension
+        run: node scripts/package-gemini-extension.mjs && node scripts/check-gemini-extension.mjs

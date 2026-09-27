@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// The shared Codex/Cursor plugin ships a copy of skills/hydrant, because
+// The shared Codex, Claude Code and Cursor plugin ships a copy of skills/hydrant, because
 // Codex drops symlinks when it caches a plugin. skills/hydrant is the source.
 //   node scripts/check-plugin.mjs          fail on drift or a broken manifest
 //   node scripts/check-plugin.mjs --write  refresh the copy from the source
@@ -90,8 +90,15 @@ const cursorMarket = await json(".cursor-plugin/marketplace.json");
 if (cursorMarket.name !== "hydrant" || cursorMarket.owner?.name !== "Background Craft LLC" || cursorMarket.plugins?.length !== 1 || cursorMarket.plugins[0]?.name !== cursor.name || cursorMarket.plugins[0]?.source !== PLUGIN) errors.push(`.cursor-plugin/marketplace.json: expected only the shared hydrant plugin at ${PLUGIN}`);
 if (!(await exists(join(cursorMarket.plugins?.[0]?.source ?? "", ".cursor-plugin/plugin.json")))) errors.push(`.cursor-plugin/marketplace.json: plugin manifest is missing`);
 
+// 5. The Claude Code manifests match: same plugin, same version, and the marketplace resolves to it.
+const claude = await json(join(PLUGIN, ".claude-plugin/plugin.json"));
+if (claude.name !== manifest.name || claude.version !== manifest.version) errors.push(`${PLUGIN}/.claude-plugin/plugin.json: name and version must match the Codex manifest (${manifest.name} ${manifest.version})`);
+const claudeMarket = await json(".claude-plugin/marketplace.json");
+const claudeEntry = (claudeMarket.plugins ?? []).find(plugin => plugin.name === manifest.name);
+if (typeof claudeEntry?.source !== "string" || !(await exists(join(claudeEntry.source, ".claude-plugin/plugin.json")))) errors.push(`.claude-plugin/marketplace.json: needs a ${manifest.name} entry whose source is the path of a plugin with .claude-plugin/plugin.json`);
+
 if (errors.length) {
   console.error(errors.join("\n") + "\nRun node scripts/check-plugin.mjs --write after editing skills/hydrant.");
   process.exit(1);
 }
-console.log(`Plugin ${manifest.name} ${manifest.version}: Codex and Cursor manifests, MCP server, marketplaces and skill copy check out.`);
+console.log(`Plugin ${manifest.name} ${manifest.version}: Codex, Claude Code and Cursor manifests, MCP server, marketplaces and skill copy check out.`);

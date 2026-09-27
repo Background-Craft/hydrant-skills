@@ -1,6 +1,6 @@
 {
   "name": "hydrant",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "Hydrant's MCP server and the hydrant skill: read a Hydrant workspace before touching it, write with request IDs and versions, read back, and report what actually happened.",
   "author": {
     "name": "Background Craft LLC",

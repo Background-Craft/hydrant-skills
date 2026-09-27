@@ -1,6 +1,7 @@
 node_modules/
 .DS_Store
 *.log
+release/
 .env
 .env.local
 .idea/
