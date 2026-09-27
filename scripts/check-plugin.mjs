@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// The Codex and Claude Code plugin in plugins/hydrant/ ships a copy of skills/hydrant, because
+// The shared Codex, Claude Code and Cursor plugin ships a copy of skills/hydrant, because
 // Codex drops symlinks when it caches a plugin. skills/hydrant is the source.
 //   node scripts/check-plugin.mjs          fail on drift or a broken manifest
 //   node scripts/check-plugin.mjs --write  refresh the copy from the source
@@ -65,17 +65,30 @@ for (const path of paths.filter(Boolean)) {
 if (manifest.name !== "hydrant") errors.push(`${PLUGIN}: manifest name must be hydrant`);
 if (!/^\d+\.\d+\.\d+$/.test(manifest.version ?? "")) errors.push(`${PLUGIN}: manifest version must be x.y.z`);
 
+const cursor = await json(join(PLUGIN, ".cursor-plugin/plugin.json"));
+for (const path of [cursor.logo, cursor.skills, cursor.mcpServers].filter(Boolean)) {
+  if (!(await exists(join(PLUGIN, path)))) errors.push(`${PLUGIN}: Cursor manifest points at missing ${path}`);
+}
+if (cursor.name !== manifest.name || cursor.version !== manifest.version) errors.push(`${PLUGIN}: Cursor name and version must match Codex`);
+if (cursor.author?.name !== "Background Craft LLC" || cursor.license !== "MIT") errors.push(`${PLUGIN}: Cursor author and license must be Background Craft LLC and MIT`);
+if (cursor.logo !== "assets/logo.png" || cursor.skills !== "./skills/" || cursor.mcpServers !== "./.mcp.json") errors.push(`${PLUGIN}: Cursor must use the shared logo, skills and MCP config`);
+if (cursor.hooks || cursor.variables || cursor.rules || cursor.agents || cursor.commands) errors.push(`${PLUGIN}: Cursor must contain only the shared skill and MCP server`);
+
 // 3. The MCP server is the canonical HTTPS endpoint, with no secrets.
 const mcp = await json(join(PLUGIN, ".mcp.json"));
 const server = mcp.mcpServers?.hydrant;
 if (server?.url !== "https://hydrant.dev/api/mcp" || server?.type !== "http") errors.push(`${PLUGIN}/.mcp.json: hydrant must be type http at https://hydrant.dev/api/mcp`);
-if (Object.keys(server ?? {}).some(k => k !== "type" && k !== "url") || /token|bearer|authorization|key/i.test(JSON.stringify(mcp))) errors.push(`${PLUGIN}/.mcp.json: only type and url, no tokens, keys or headers; the server signs in with OAuth`);
+if (Object.keys(mcp).join() !== "mcpServers" || Object.keys(mcp.mcpServers ?? {}).join() !== "hydrant" || Object.keys(server ?? {}).some(k => k !== "type" && k !== "url") || /token|bearer|authorization|key/i.test(JSON.stringify(mcp))) errors.push(`${PLUGIN}/.mcp.json: only the hydrant server with type and url, no tokens, keys or headers; the server signs in with OAuth`);
 
 // 4. The repo marketplace resolves to the plugin.
 const market = await json(".agents/plugins/marketplace.json");
 for (const plugin of market.plugins ?? []) {
   if (!(await exists(join(plugin.source?.path ?? "", ".codex-plugin/plugin.json")))) errors.push(`.agents/plugins/marketplace.json: ${plugin.name} has no plugin at ${plugin.source?.path}`);
 }
+
+const cursorMarket = await json(".cursor-plugin/marketplace.json");
+if (cursorMarket.name !== "hydrant" || cursorMarket.owner?.name !== "Background Craft LLC" || cursorMarket.plugins?.length !== 1 || cursorMarket.plugins[0]?.name !== cursor.name || cursorMarket.plugins[0]?.source !== PLUGIN) errors.push(`.cursor-plugin/marketplace.json: expected only the shared hydrant plugin at ${PLUGIN}`);
+if (!(await exists(join(cursorMarket.plugins?.[0]?.source ?? "", ".cursor-plugin/plugin.json")))) errors.push(`.cursor-plugin/marketplace.json: plugin manifest is missing`);
 
 // 5. The Claude Code manifests match: same plugin, same version, and the marketplace resolves to it.
 const claude = await json(join(PLUGIN, ".claude-plugin/plugin.json"));
@@ -88,4 +101,4 @@ if (errors.length) {
   console.error(errors.join("\n") + "\nRun node scripts/check-plugin.mjs --write after editing skills/hydrant.");
   process.exit(1);
 }
-console.log(`Plugin ${manifest.name} ${manifest.version}: manifest, MCP server, marketplace and skill copy check out.`);
+console.log(`Plugin ${manifest.name} ${manifest.version}: Codex, Claude Code and Cursor manifests, MCP server, marketplaces and skill copy check out.`);

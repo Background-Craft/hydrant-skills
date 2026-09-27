@@ -4,6 +4,8 @@ Your agent has confidence. Give it a paper trail.
 
 Hydrant tracks issues, projects and the decisions that otherwise disappear into chat history. This plugin connects Claude Code to one Hydrant workspace and gives it the `hydrant` skill: read the context, do the requested work, check the result, and bring receipts. “Done” is a claim. We'd like some evidence.
 
+Using Cursor? See [Hydrant for Cursor](./CURSOR.md) for its installation and connection steps.
+
 ## Two commands. Then permission.
 
 You need a [Hydrant account](https://hydrant.dev) and a workspace you can access. Install from this repository's marketplace:

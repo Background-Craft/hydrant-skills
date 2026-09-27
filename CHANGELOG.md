@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- Cursor manifests reuse the shared `plugins/hydrant/` skill, logo and OAuth MCP configuration (plugin version 0.3.1). Verified on Cursor 3.21.16 for macOS: discovery, browser authorization using an existing GitHub session, synthetic issue creation/read-back and denial after revocation. Marketplace and cursor.directory submissions remain separate.
+
 ## 0.3.3 — 2026-09-27
 
 - Exclude macOS metadata from the Gemini release archive and validate it without silently consuming AppleDouble files.

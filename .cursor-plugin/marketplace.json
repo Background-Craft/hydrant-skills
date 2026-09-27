@@ -1,0 +1,12 @@
+{
+  "name": "hydrant",
+  "owner": {
+    "name": "Background Craft LLC"
+  },
+  "plugins": [
+    {
+      "name": "hydrant",
+      "source": "plugins/hydrant"
+    }
+  ]
+}
