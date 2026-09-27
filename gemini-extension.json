@@ -1,0 +1,10 @@
+{
+  "name": "hydrant",
+  "version": "0.3.1",
+  "description": "Hydrant's MCP server and base workspace skill.",
+  "mcpServers": {
+    "hydrant": {
+      "httpUrl": "https://hydrant.dev/api/mcp"
+    }
+  }
+}

@@ -23,3 +23,5 @@ jobs:
         run: node scripts/validate-frontmatter.mjs
       - name: Check the Codex plugin
         run: node scripts/check-plugin.mjs
+      - name: Check the Gemini extension
+        run: node scripts/package-gemini-extension.mjs && node scripts/check-gemini-extension.mjs

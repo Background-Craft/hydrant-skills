@@ -1,6 +1,10 @@
 # Changelog
 
-## 0.3.0 — unreleased
+## 0.3.1 — unreleased
+
+- Gemini CLI extension: `gemini-extension.json` exposes the canonical Hydrant streamable HTTP MCP endpoint and the base `hydrant` skill. `node scripts/package-gemini-extension.mjs` creates the generic GitHub Release archive; `node scripts/check-gemini-extension.mjs` verifies its manifest, inventory and byte-identical skill copy.
+
+## 0.3.0 — 2026-09-26
 
 - Codex plugin `hydrant@hydrant` in `plugins/hydrant/`: the Hydrant MCP server at `https://hydrant.dev/api/mcp` (OAuth, no keys) plus the base `hydrant` skill. The repository is its own marketplace (`.agents/plugins/marketplace.json`). Workflow pack skills stay per-repository installs through `hydrant-setup`.
 - The plugin ships a byte-identical copy of `skills/hydrant`, because Codex drops symlinks when it caches a plugin. `scripts/check-plugin.mjs` fails CI on drift, a missing manifest path, a non-canonical MCP URL or a token in `.mcp.json`; `--write` refreshes the copy.
