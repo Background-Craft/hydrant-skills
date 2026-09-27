@@ -1,0 +1,11 @@
+interface:
+  display_name: "Hydrant"
+  short_description: "Manage issues in your Hydrant workspace"
+
+dependencies:
+  tools:
+    - type: "mcp"
+      value: "hydrant"
+      description: "Hydrant workspace MCP server"
+      transport: "streamable_http"
+      url: "https://hydrant.dev/api/mcp"
