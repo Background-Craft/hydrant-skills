@@ -114,7 +114,7 @@ Never run `gh pr merge`, approve a pull request, dismiss a review or delete a br
 
 ## Stopping early
 
-If you stop after Phase 2 and before Phase 5's evidence comment (interrupted, a blocker you cannot clear, the user stops you, or the session is ending), post a **Handoff** as the `hydrant` skill describes, read it back and leave the issue in its status.
+If you stop after Phase 2 and before Phase 5's evidence comment (interrupted, a blocker you cannot clear, the user stops you, or the session is ending), post a **Handoff** as the `hydrant` skill describes, read it back and leave the issue in its status. If preflight already moved it to a `review`-behavior status, say so in **Next step**: resuming it then needs the user.
 
 ## Phase 7: Report
 
