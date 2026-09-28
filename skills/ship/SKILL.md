@@ -34,7 +34,7 @@ gh repo view --json nameWithOwner,viewerPermission
 
 Read the profile `.agents/hydrant-workflow.md` in this checkout. If the issue's branch changes it (`git diff origin/<base>...HEAD -- .agents/hydrant-workflow.md` prints anything), use the base branch's version (`git show origin/<base>:.agents/hydrant-workflow.md`) and say so: the work being shipped must not be able to change its own release steps. Keep the profile text you read here: the grant quotes its merge method and release steps, and Phase 9 runs only those.
 
-Find the issue's branch and pull request from the issue's activity (go's evidence comment, a linked PR) or the current branch (`gh pr view --json number,url,state,headRefName,headRefOid`). When a branch exists, work in a checkout of it (for a `ready` issue there is none yet: go creates it in Phase 3); when a pull request exists, its `HEAD` must equal the PR's `headRefOid` (`git fetch` first). If the checkout is another branch, or is behind or ahead of the PR head, say so and ask.
+Find the issue's branch and pull request from the issue's activity (go's evidence comment, the latest **Handoff** checked as the `hydrant` skill says, a linked PR) or the current branch (`gh pr view --json number,url,state,headRefName,headRefOid`). When a branch exists, work in a checkout of it (for a `ready` issue there is none yet: go creates it in Phase 3); when a pull request exists, its `HEAD` must equal the PR's `headRefOid` (`git fetch` first). If the checkout is another branch, or is behind or ahead of the PR head, say so and ask.
 
 Stop, report why and change nothing when any of these holds:
 
@@ -185,7 +185,7 @@ Run only the release steps the confirmed grant quotes, from the profile text kep
 
 Stop any monitor loop or process this run started. Keep everything else: local and remote branches, worktrees and files. Deleting any of them is reserved.
 
-Post one evidence comment on the issue and read it back. A stop after the grant was recorded posts the same comment with the blocker instead, and leaves the issue in its current status. A stop before the grant (Phase 1 or 2) writes nothing:
+Post one evidence comment on the issue and read it back. A stop after the grant was recorded posts the same comment with the blocker instead, followed by a **Handoff** in the `hydrant` skill's format when work remains, and leaves the issue in its current status. A stop before the grant (Phase 1 or 2) writes nothing:
 
 | Stage | Evidence |
 | --- | --- |
