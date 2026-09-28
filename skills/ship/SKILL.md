@@ -185,7 +185,7 @@ Run only the release steps the confirmed grant quotes, from the profile text kep
 
 Stop any monitor loop or process this run started. Keep everything else: local and remote branches, worktrees and files. Deleting any of them is reserved.
 
-Post one evidence comment on the issue and read it back. A stop after the grant was recorded posts the same comment with the blocker instead, followed by a **Handoff** in the `hydrant` skill's format when work remains, and leaves the issue in its current status. A stop before the grant (Phase 1 or 2) writes nothing:
+Post one evidence comment on the issue and read it back. A stop after the grant was recorded posts the same comment with the blocker instead, written as a **Handoff** in the `hydrant` skill's format when work remains, and leaves the issue in its current status. A stop before the grant (Phase 1 or 2) writes nothing:
 
 | Stage | Evidence |
 | --- | --- |

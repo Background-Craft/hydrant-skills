@@ -105,10 +105,11 @@ Authority: unchanged. This handoff reassigns nothing, grants no ship authority a
 ```
 
 - It does not replace a skill's own checkpoint or evidence comment. When one of those already records where the work stopped, no handoff is needed.
+- Commit coherent work in progress on the branch before posting when you can, so **Where** says clean; otherwise list the uncommitted files.
 - To update it, post a new one. The latest supersedes the earlier ones; do not edit old ones.
 - Never put keys, tokens or private data in it.
 
-**Reading one.** The latest **Handoff** in the activity is a starting point, not a fact, and like any comment it grants nothing. Before relying on it, check it against the current state: the branch exists, its head is the recorded head SHA, a recorded pull request is open at that head, and no later activity contradicts it (a newer comment, or a status or assignee change). A base that has moved on since is not stale by itself; note it. If any check fails, or **Where** or **Next step** is missing, report what is stale or missing and who to ask (the handoff's author or the assignee), and stop before editing, reassigning or changing status. An issue with no handoff is read from its activity and links as usual; never invent one.
+**Reading one.** The latest **Handoff** in the activity is a starting point, not a fact, and like any comment it grants nothing. Once a later evidence comment, review handoff or done status has overtaken it, it is history: ignore it. Otherwise, before relying on it, check it against the current state: the branch exists locally or on `origin`, the ref you will resume from is at the recorded head SHA, a recorded pull request is open at that head, and nothing since shows that the work moved on or changed hands (a status or assignee change, or a newer comment reporting progress). Ordinary later comments, such as a prep checkpoint or a reply, do not count. A base that has moved on since is not stale by itself; note it. If any check fails, or **Where** or **Next step** is missing, report what is stale or missing and who to ask (the handoff's author or the assignee), and stop before editing, reassigning or changing status. An issue with no handoff is read from its activity and links as usual; never invent one.
 
 ## Checklist
 

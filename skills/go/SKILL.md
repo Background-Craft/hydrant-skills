@@ -33,7 +33,7 @@ Stop, report why and change nothing when any of these holds:
 | Uncommitted changes you did not make in this session, other than untracked pack files (`.agents/hydrant-workflow.md`, `.agents/skills/`, `.claude/skills/`, `skills-lock.json`) | The changed paths. Never stash, reset, check out over or discard them; the user commits, moves or discards them. |
 | Local commits on the base not on `origin/<base>` (`git log --oneline origin/<base>..<base>`; skip when there is no local `<base>` branch) | The commits. The new branch would leave them out; the user pushes or moves them first. |
 | Status behavior is `review`, `done`, `canceled`, `iced` or trashed | Its status. Resume only when the user asks. |
-| The latest **Handoff** fails the `hydrant` skill's checks: its branch is missing, its head moved, later activity contradicts it, or **Where** or **Next step** is missing | What is stale or missing, and who to ask. |
+| The latest **Handoff**, not yet overtaken, fails the checks in the `hydrant` skill's handoff section | What is stale or missing, and who to ask. |
 
 ## Phase 2: Start
 
