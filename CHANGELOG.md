@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Handoff for unfinished work: the `hydrant` skill defines a short `**Handoff**` comment (done with evidence, left, open decisions, where, checks, next step, authority unchanged) posted when work stops before review, and how to check the latest one before trusting it. `go` and `ship` post it when they stop early; `prep`, `go` and `ship` check it when they read an issue, and `go` stops on a stale one. Hydrant #436.
 - Cursor manifests reuse the shared `plugins/hydrant/` skill, logo and OAuth MCP configuration (plugin version 0.3.1). Verified on Cursor 3.21.16 for macOS: discovery, browser authorization using an existing GitHub session, synthetic issue creation/read-back and denial after revocation. Marketplace and cursor.directory submissions remain separate.
 
 ## 0.3.3 — 2026-09-27
