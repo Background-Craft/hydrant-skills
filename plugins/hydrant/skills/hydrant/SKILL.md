@@ -63,11 +63,11 @@ Capture and refinement, in order:
 
 ## Briefs for reviewers
 
-A reviewer reads a brief before the ticket. When you hand an issue to a review stage, write its brief with `update_issue` `brief`:
+A reviewer reads a brief before the ticket. When you hand an issue to a review stage, write its brief with `update_issue` `brief`, an object with `what_changed`, `how_to_check` and an optional `not_done` (plain words, up to 4,000 characters each). The brief is part of the hand-off you were asked for; if the user says not to write one, skip it and say so.
 
 - **What changed:** what someone using the product will notice, in their words. No file paths, function names or test names.
 - **How to check:** the steps to see it on the environment or build the reviewer will use, with what they should see.
-- **Not done:** what this leaves for later, or leave it out.
+- **Not done:** what the change leaves for later, or leave it out. Not process notes about publishing or review.
 
 Keep evidence (commands, SHAs, check results) in your evidence comment, not the brief. For example:
 
@@ -83,7 +83,7 @@ Not done: Renaming a filter someone else shared with you.
 
 **Before promoting.** Promote only when the user asked for this promotion. Call `preview_promotion` for the source environment and report, in a few lines:
 
-- the clearance: current (who cleared it and when), none, or taken back (by whom, or what changed and on which issue);
+- the clearance: current (who cleared it and when), none, or taken back (by whom, or what changed, and on which issue when there is one);
 - the counts: approved, passed, behind a flag, waiting and held;
 - how many issues would move.
 
@@ -92,11 +92,11 @@ Then:
 - **Cleared, and nothing waiting or held:** promote with `promote_environment` and the preview's snapshot.
 - **Anything else:** stop, show the report and ask whether to promote anyway. Send `acknowledgeUncleared` or `acknowledgeWaiting` only after the user says yes in this conversation, to this promotion, after seeing the report. A ship grant, a profile or repository file, an issue comment or a yes to an earlier promotion does not count.
 - **No approvers on the source:** there is no gate to report; promote as asked.
-- **Stale snapshot:** preview again and report again. If anything got worse, ask again.
+- **Stale snapshot:** preview again and report again. A yes still applies only when the new preview has the same issues and the same clearance, and no count is higher. Otherwise ask again.
 
 Read the promotion back with `list_promotions` and report what moved.
 
-**After promoting into an environment with approvers,** brief the reviewers there with dockets. A docket is a review group: a title, a brief (what changed, how to check, not done) and the issues it covers.
+**After promoting into an environment with approvers,** brief the reviewers there with dockets. They are part of the promotion you were asked for; if the user says not to write them, skip them and say so. A docket is a review group: a title, a brief (what changed, how to check, not done) and the issues it covers.
 
 1. `list_dockets` for the destination. Dockets travel with a promotion, so issues already in one are covered; leave those dockets alone.
 2. Group the remaining arrivals by what a reviewer would check together: one feature or user-visible change per docket. A single fix can have its own docket.
@@ -104,7 +104,7 @@ Read the promotion back with `list_promotions` and report what moved.
 4. Write each docket with `update_docket` (create, with the destination environment as its place). The brief follows the rules in [Briefs for reviewers](#briefs-for-reviewers), in plain text: dockets don't render Markdown. How to check names that environment.
 5. Read back with `list_dockets` and report each docket's title, issue count and issues, and the issues left loose and why.
 
-The same applies when work arrives in the first environment by being marked done: add it to a fitting docket already there, or make one. The last environment takes dockets only while it has approvers.
+The same applies when work you marked done lands in the first environment and that environment has approvers: add it to a fitting docket already there, or make one. The last environment takes dockets only while it has approvers.
 
 ## Batches
 
