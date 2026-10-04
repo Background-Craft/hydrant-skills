@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Sign-off for agents: the `hydrant` skill writes a reviewer's brief at review handoff, previews a promotion and reports the clearance and approval counts before promoting, stops for the user's yes before promoting past a missing clearance or waiting or held work, never clears or answers for a reviewer, and groups arrivals in a gated environment into dockets. `go` writes the brief at handoff; `ship` follows the promotion rules in its release steps, adds the stop to its reserved list and dockets work it marks done into a gated environment. Hydrant #558.
 - Handoff for unfinished work: the `hydrant` skill defines a short `**Handoff**` comment (done with evidence, left, open decisions, where, checks, next step, authority unchanged) posted when work stops before review, and how to check the latest one before trusting it. `go` and `ship` post it when they stop early; `prep`, `go` and `ship` check it when they read an issue, and `go` stops on a stale one. Hydrant #436.
 - Cursor manifests reuse the shared `plugins/hydrant/` skill, logo and OAuth MCP configuration (plugin version 0.3.1). Verified on Cursor 3.21.16 for macOS: discovery, browser authorization using an existing GitHub session, synthetic issue creation/read-back and denial after revocation. Marketplace and cursor.directory submissions remain separate.
 
