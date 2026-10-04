@@ -1,6 +1,6 @@
 ---
 name: hydrant
-description: Work inside a Hydrant workspace through its MCP tools without guessing, overwriting or overstating. Use when the user asks about Hydrant issues, activity, blockers, sub-issues, labels, projects, milestones, cycles, environments, promotions, dockets or the Hydrant MCP connection, or when a Hydrant server is connected and the task touches its data.
+description: Work inside a Hydrant workspace through its MCP tools without guessing, overwriting or overstating. Read it before any Hydrant write, including promoting an environment, which has its own checks before and after. Use when the user asks about Hydrant issues, activity, blockers, sub-issues, labels, projects, milestones, cycles, environments, promotions, dockets or the Hydrant MCP connection, or when a Hydrant server is connected and the task touches its data.
 license: MIT
 ---
 
