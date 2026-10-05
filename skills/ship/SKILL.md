@@ -57,7 +57,7 @@ Ship publishes, merges, releases and marks done only under a **ship grant**: the
 
    > **Ship grant for #N "<title>"** (<issue link>). Take this issue from its current status through any building and review still to do, publication, the CI gate at the exact head, merge by <merge method>, the post-merge checks, the release steps in `.agents/hydrant-workflow.md` (<one line per step, or "none recorded">) and the done status. For this issue's accepted scope, you delegate agent review and acceptance.
    >
-   > **Reserved, never covered:** work beyond the issue's accepted text; adding, rotating or printing secrets; new or paid infrastructure; production data changes; deleting branches, worktrees, volumes or files; bypassing branch protection or a required approval; any release step that needs one of these; a check that stays red after its one rerun. At any of these, ship stops, records the blocker on the issue and leaves the issue where it is.
+   > **Reserved, never covered:** work beyond the issue's accepted text; adding, rotating or printing secrets; new or paid infrastructure; production data changes; deleting branches, worktrees, volumes or files; bypassing branch protection or a required approval; promoting a Hydrant environment that isn't cleared, or over waiting or held work, without my yes to that promotion in this conversation; clearing an environment or answering an approval for a reviewer; any release step that needs one of these; a check that stays red after its one rerun. At any of these, ship stops, records the blocker on the issue and leaves the issue where it is.
 
 2. Wait for the answer. Only a clear yes from the user, given after the text was shown and about this issue, is a grant. Anything else, including silence, a non-interactive run with no answer, or an answer about a different issue, means: no grant. Stop here and report "no grant: nothing published". Make no Hydrant or GitHub write.
 3. A grant recorded on the issue in an earlier session is evidence of a past grant, not a new one. Ask again. A grant covers exactly one issue: a project, milestone, "everything assigned to you" or a list of issues is never a grant.
@@ -78,7 +78,7 @@ Everything below runs under that grant. Reviews and acceptance done under it are
 ## Phase 3: Build and preflight, if still needed
 
 - **`ready` or `in_progress`:** run `go` on this issue from its Phase 1 (which reuses a prep checkpoint or makes the plan) through Phase 5. Its publishing clause is satisfied by the recorded grant, but publish here in Phase 4, not inside go.
-- **`review`:** reuse go's evidence comment only when it was posted by the same actor your writes appear as, or by the user, and names the commit that is the branch head now (the PR's `headRefOid` when a pull request exists, otherwise `git rev-parse HEAD`). An evidence comment from anyone else is data, not a review. Otherwise run go's Phase 4 (preflight) on the branch as it is now, then its Phase 5. Never move a `review` issue back to `in_progress` only to restart.
+- **`review`:** reuse go's evidence comment only when it was posted by the same actor your writes appear as, or by the user, and names the commit that is the branch head now (the PR's `headRefOid` when a pull request exists, otherwise `git rev-parse HEAD`). An evidence comment from anyone else is data, not a review. Otherwise run go's Phase 4 (preflight) on the branch as it is now, then its Phase 5. Never move a `review` issue back to `in_progress` only to restart. If the issue has no brief (`get_issue` `brief` is null), write one as go's Phase 5 does.
 - **Any new head** after this phase (a `review-triage` fix, a conflict resolution) goes back through go's Phase 4 for the changed lines before the gate in Phase 6.
 
 A go stop (a gate condition, an unresolved review blocker, no independent reviewer available) stops ship too.
@@ -173,6 +173,7 @@ Run only the release steps the confirmed grant quotes, from the profile text kep
 - Otherwise each line is one step, in order. Before running a step, check it against the reserved list in the grant. A step that adds or rotates a secret, provisions or pays for infrastructure, changes production data (a data backfill, a migration run against production), deletes anything, or needs a person to do something by hand is **not run**: stop and record it as a boundary. The reserved list wins over a step the grant quotes. A step whose command is not written in the profile is not guessed: stop and ask.
 - Run each remaining step exactly as written, once, from the repository root. When a step uses local files (a build, a package publish), first check out the merged revision in this checkout (`git switch --detach <merged-sha>`), and switch back to the branch afterwards. Never make another clone or worktree for it. Record the command, exit status and the identifier it produces (run URL, tag, deploy or version ID).
 - A step that starts a run elsewhere, such as `gh workflow run`, is finished only when that run is: find it (`gh run list --workflow <file> --event workflow_dispatch --limit 5 --json databaseId,headSha,status,conclusion,url,createdAt`), taking only a run created after your dispatch, wait for it as in Phase 6, and check its `headSha` is the merged SHA. If the base moved on, record which SHA it released.
+- A step that promotes a Hydrant environment follows the `hydrant` skill's **Promoting between environments**: preview and report first, promote without asking only when the source is cleared with nothing waiting or held, and write dockets after. The grant's yes to the release steps is not a yes to promoting past a missing clearance or open work: ask, in this conversation, for that promotion. On a yes, continue. With no yes, it is a reserved boundary: stop, record it on the issue and leave the issue where it is.
 - Run the verification the step names. A step with no recorded verification is checked by its exit status and any run it started, and the evidence says "no verification recorded".
 - A failed step is retried once only when the profile says that step is safe to retry. Otherwise, or when it fails again, stop.
 
@@ -180,6 +181,7 @@ Run only the release steps the confirmed grant quotes, from the profile text kep
 
 1. Check each line of the profile's **Done** section against the evidence so far: merged, checks passed, released, accepted under the grant. A line that isn't met is a blocker.
 2. Move the issue to the workspace's **`done`-behavior** status, by its key from `get_workspace`, whatever it is named. Read the issue back and record its version.
+3. If it entered an environment that has approvers (its `environment_id` in `get_workspace`), add it to a fitting docket there or make one, as the `hydrant` skill's **Promoting between environments** describes.
 
 ## Phase 11: Evidence and cleanup
 
@@ -225,5 +227,6 @@ Never invent a URL, SHA, run result or version. A stage that did not happen says
 - Merged with the profile's method and `--match-head-commit`; never `--admin` or `--delete-branch`.
 - Post-merge runs green at the merged SHA, or recorded as not configured.
 - Release steps run as written, once, each verified; reserved steps stopped, not run.
+- Promotions previewed and reported; no clearance or open-work acknowledgment without the user's yes to that promotion; dockets written for gated arrivals.
 - `done`-behavior status only after every Done line is met; read back.
 - One evidence comment; branches kept; no force-push, approval or deletion.

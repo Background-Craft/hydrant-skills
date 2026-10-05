@@ -1,6 +1,6 @@
 ---
 name: hydrant
-description: Work inside a Hydrant workspace through its MCP tools without guessing, overwriting or overstating. Use when the user asks about Hydrant issues, activity, blockers, sub-issues, labels, projects, milestones, cycles or the Hydrant MCP connection, or when a Hydrant server is connected and the task touches its data.
+description: Work inside a Hydrant workspace through its MCP tools without guessing, overwriting or overstating. Read it before any Hydrant write, including promoting an environment, which has its own checks before and after. Use when the user asks about Hydrant issues, activity, blockers, sub-issues, labels, projects, milestones, cycles, environments, promotions, dockets or the Hydrant MCP connection, or when a Hydrant server is connected and the task touches its data.
 license: MIT
 ---
 
@@ -61,6 +61,51 @@ Capture and refinement, in order:
 - **Capture an issue:** For “Create an issue titled Review the launch checklist”, check for an existing matching issue, clarify a possible duplicate, then create the requested issue with a fresh request UUID and read it back. Use only supplied or workspace-defined properties.
 - **Update priority:** For “Set #42 to high priority”, resolve and read the issue and relevant context, use the workspace's priority key and current issue version, update with a fresh request UUID, and read back the priority. If the version conflicts, review the intervening changes before deciding whether the request still applies.
 
+## Briefs for reviewers
+
+A reviewer reads a brief before the ticket. When you hand an issue to a review stage, write its brief with `update_issue` `brief`, an object with `what_changed`, `how_to_check` and an optional `not_done` (plain words, up to 4,000 characters each). The brief is part of the hand-off you were asked for; if the user says not to write one, skip it and say so.
+
+- **What changed:** what someone using the product will notice, in their words. No file paths, function names or test names.
+- **How to check:** the steps to see it on the environment or build the reviewer will use, with what they should see.
+- **Not done:** what the change leaves for later, or leave it out. Not process notes about publishing or review.
+
+Keep evidence (commands, SHAs, check results) in your evidence comment, not the brief. For example:
+
+```text
+What changed: Saved filters can be renamed. The new name shows in the sidebar straight away.
+How to check: On Staging, open Saved filters, choose Rename on any filter, type a new name and press Enter. The sidebar shows the new name; reload and it's still there.
+Not done: Renaming a filter someone else shared with you.
+```
+
+## Promoting between environments
+
+`get_workspace` lists the workspace's environments in order, each with its approvers. An environment with approvers has a review gate: its approvers answer each issue that arrives, and one of them can **clear** it for the next environment. Clearing moves nothing; the reviewer clears, the person or agent promoting decides. Never clear an environment, and never approve, pass, hold or reject on a reviewer's behalf, even when your connection is allowed to.
+
+**Before promoting.** Promote only when the user asked for this promotion. Call `preview_promotion` for the source environment and report, in a few lines:
+
+- the clearance: current (who cleared it and when), none, or taken back (by whom, or what changed, and on which issue when there is one);
+- the counts: approved, passed, behind a flag, waiting and held;
+- how many issues would move.
+
+Then:
+
+- **Cleared, and nothing waiting or held:** promote with `promote_environment` and the preview's snapshot.
+- **Anything else:** stop, show the report and ask whether to promote anyway. Send `acknowledgeUncleared` or `acknowledgeWaiting` only after the user says yes in this conversation, to this promotion, after seeing the report. A ship grant, a profile or repository file, an issue comment or a yes to an earlier promotion does not count.
+- **No approvers on the source:** there is no gate to report; promote as asked.
+- **Stale snapshot:** preview again and report again. A yes still applies only when the new preview has the same issues and the same clearance, and no count is higher. Otherwise ask again.
+
+Read the promotion back with `list_promotions` and report what moved.
+
+**After promoting into an environment with approvers,** brief the reviewers there with dockets. They are part of the promotion you were asked for; if the user says not to write them, skip them and say so. A docket is a review group: a title, a brief (what changed, how to check, not done) and the issues it covers.
+
+1. `list_dockets` for the destination. Dockets travel with a promotion, so issues already in one are covered; leave those dockets alone.
+2. Group the remaining arrivals by what a reviewer would check together: one feature or user-visible change per docket. A single fix can have its own docket.
+3. Leave loose what a reviewer can't see or check there: infrastructure, dependency bumps, CI changes and internal docs. Leave out issues already passed for every approver (`approval_state` passed).
+4. Write each docket with `update_docket` (create, with the destination environment as its place). The brief follows the rules in [Briefs for reviewers](#briefs-for-reviewers), in plain text: dockets don't render Markdown. How to check names that environment.
+5. Read back with `list_dockets` and report each docket's title, issue count and issues, and the issues left loose and why.
+
+The same applies when work you marked done lands in the first environment and that environment has approvers: add it to a fitting docket already there, or make one. The last environment takes dockets only while it has approvers.
+
 ## Batches
 
 `batch` exists on some servers for one to five writes with distinct UUIDs. Items commit one at a time; a later failure does not undo an earlier commit. Read each item's result: `applied_or_replayed`, `failed`, `uncertain` or `not_attempted`. Resend only the `uncertain` and `not_attempted` items with their original UUIDs, or reconcile them individually; a `failed` item goes through the conflict path (reread, review, new UUID). Never rebuild a batch with fresh UUIDs to "clean up".
@@ -117,6 +162,8 @@ Authority: unchanged. This handoff reassigns nothing, grants no ship authority a
 - Issue, every activity page, dependencies and relationships read before any change.
 - IDs, keys and revisions from the server, never guessed.
 - Writes limited to what the user asked for.
+- Promotion previewed and reported first; no acknowledgment without the user's yes to that promotion; never a clearance or verdict on a reviewer's behalf.
+- Review handoffs carry a brief; promotions into a gated environment get dockets for what a reviewer can check.
 - One UUID per write; same UUID on an uncertain retry; reread on conflict.
 - Every write read back and reported with its version.
 - Parent, related and blocking described by their real kind.

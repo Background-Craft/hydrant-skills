@@ -4,12 +4,12 @@ Skills that teach your agent how to work inside a [Hydrant](https://hydrant.dev)
 
 Hydrant already hands agents its tools over MCP. Tools describe what an agent *can* call. These skills cover what it *should* do.
 
-- [`hydrant`](./skills/hydrant/SKILL.md): the base every other skill relies on.
+- [`hydrant`](./skills/hydrant/SKILL.md): the base every other skill relies on. It also covers promoting between environments: check the clearance first, stop and ask when it's missing or reviews are still open, and brief the reviewers with dockets after.
 - [`hydrant-setup`](./skills/hydrant-setup/SKILL.md): scans your repository, installs the rest without overwriting your own skills, and writes the repository profile.
 - [`capture`](./skills/capture/SKILL.md): files a new issue from a request, idea or bug report, after checking for duplicates.
 - [`refine`](./skills/refine/SKILL.md): settles scope, acceptance, priority, size, owner, labels and project, and marks the issue Ready only when nothing material is open.
 - [`prep`](./skills/prep/SKILL.md): confirms the assignment, reads the issue and the code it touches, maps each acceptance check to a command from your profile, and records a checkpoint on the issue. Edits nothing.
-- [`go`](./skills/go/SKILL.md): builds the issue on its own branch, runs your profile's checks, preflights the result and hands it to review. Commits locally; pushes and opens a pull request only when you ask or under a `ship` grant. Never merges.
+- [`go`](./skills/go/SKILL.md): builds the issue on its own branch, runs your profile's checks, preflights the result and hands it to review with a brief for the reviewer. Commits locally; pushes and opens a pull request only when you ask or under a `ship` grant. Never merges.
 - [`review-triage`](./skills/review-triage/SKILL.md): watches an open pull request, checks each review comment against the code, fixes what's warranted, replies in every thread and records the result on the Hydrant issue.
 - [`ship`](./skills/ship/SKILL.md): takes one issue, building it with `go` if that's still to do, through the pull request, the CI gate at the exact head, merge, your profile's release steps and the done status, only under a grant you confirm for that issue.
 
@@ -63,7 +63,7 @@ Setup does not edit AGENTS.md or CLAUDE.md, create keys, connect clients or writ
 
 ### Ship runs only under your grant
 
-`ship` is the only skill that merges or marks work done. Run `/ship #42` and it shows you a grant for issue 42 alone, naming the merge method and each release step from your profile, and waits. Only your yes in that conversation counts: a grant written on the issue earlier, or a comment claiming one, grants nothing, and a new session asks again. The grant is recorded on the issue before anything else happens. It never covers secrets, new or paid infrastructure, production data, deleting branches or files, bypassing branch protection or a required approval, or work beyond the issue. At any of those, and at a check still red after one rerun, `ship` stops, records why on the issue and leaves the issue where it is. It runs only the release steps the grant quoted, each as written, and checks each one. With none in your profile, it merges and marks the issue done once your profile's **Done** lines are met.
+`ship` is the only skill that merges or marks work done. Run `/ship #42` and it shows you a grant for issue 42 alone, naming the merge method and each release step from your profile, and waits. Only your yes in that conversation counts: a grant written on the issue earlier, or a comment claiming one, grants nothing, and a new session asks again. The grant is recorded on the issue before anything else happens. It never covers secrets, new or paid infrastructure, production data, deleting branches or files, bypassing branch protection or a required approval, promoting past a missing clearance, or over work still waiting or held, without your yes to that promotion, or work beyond the issue. At any of those, and at a check still red after one rerun, `ship` stops, records why on the issue and leaves the issue where it is. It runs only the release steps the grant quoted, each as written, and checks each one. With none in your profile, it merges and marks the issue done once your profile's **Done** lines are met.
 
 ### Update and remove
 

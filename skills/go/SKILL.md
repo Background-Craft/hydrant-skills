@@ -93,7 +93,8 @@ If no independent reviewer can run (no subagent feature and the second session i
 ## Phase 5: Hand off
 
 1. Post one evidence comment on the issue: the branch and commits, the acceptance table, the commands run and not run, the docs impact line, the reviewer used (subagent or second session, or "unavailable"), and each finding with what happened to it. Link a pushed branch or pull request when there is one; otherwise say the work is local and unpublished.
-2. Move the issue to the **last** `review`-behavior status once blockers are fixed. With a single `review`-behavior status, the issue is already there. Read the issue back and report its status by key and name.
+2. Write the issue's brief with `update_issue` `brief`, as the `hydrant` skill's **Briefs for reviewers** describes: what changed in the reviewer's words, how to check it where they will look, and what is not done. Read it back with `get_issue`. If the server does not accept `brief`, say so in the report and move on.
+3. Move the issue to the **last** `review`-behavior status once blockers are fixed. With a single `review`-behavior status, the issue is already there. Read the issue back and report its status by key and name.
 
 Do not move it to a `done`-behavior status. Acceptance belongs to the people the workspace says accept work.
 
@@ -138,4 +139,5 @@ If you stop after Phase 2 and before Phase 5's evidence comment (interrupted, a 
 - Only the profile's commands run; none invented; each result recorded.
 - Acceptance table, docs impact line and one independent review, with fixes checked by the same reviewer.
 - One evidence comment, read back, plus the task-context receipt whenever delivery identifiers were returned.
+- A reviewer's brief written and read back before the last review status.
 - No push or pull request unless asked; never a merge, approval or force-push.
