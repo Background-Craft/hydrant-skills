@@ -2,6 +2,43 @@
 
 Skills that teach your agent how to work inside a [Hydrant](https://hydrant.dev) workspace. Read everything before touching anything. Write with receipts. Say what actually happened.
 
+## Hydrant MCP server
+
+[Hydrant](https://hydrant.dev), operated by Background Craft, lets your agent track issues, projects and dependencies in a workspace you control. The hosted MCP server can read workspace context and, with permitted access, create and update issues, add comments and manage relationships.
+
+This public repository contains Hydrant's agent skills and client integration packages. The hosted server's application source is private; you do not need to clone this repository or run a local server to connect.
+
+### Connect
+
+Add a remote MCP server to your client's configuration:
+
+```json
+{
+  "mcpServers": {
+    "hydrant": {
+      "type": "http",
+      "url": "https://hydrant.dev/api/mcp"
+    }
+  }
+}
+```
+
+The endpoint uses Streamable HTTP. Configuration syntax varies by client; follow the [client setup guide](https://hydrant.dev/help/agents/connect). Authenticate through your client's browser OAuth flow, sign in with GitHub and approve the intended workspace and permitted access. No static API key is required for OAuth connections. Access stays bounded by your workspace role and can be revoked in Hydrant under **Settings → Agents → Access**. See [consent and access](https://hydrant.dev/help/agents/consent-and-access).
+
+### Use
+
+Start by asking your agent to identify the connected workspace, then try:
+
+- “Show my open issues and their blockers.”
+- “Summarize the activity on issue #42.”
+- “Create an issue for this bug report.” (requires permitted write access)
+
+Confirm the workspace before making changes. The skills below add guidance for the ticket lifecycle; they are optional for connecting to the server.
+
+[Privacy](https://hydrant.dev/privacy) · [Terms](https://hydrant.dev/terms) · Support: [bots@hydrant.dev](mailto:bots@hydrant.dev)
+
+## Agent skills
+
 Hydrant already hands agents its tools over MCP. Tools describe what an agent *can* call. These skills cover what it *should* do.
 
 - [`hydrant`](./skills/hydrant/SKILL.md): the base every other skill relies on. It also covers promoting between environments: check the clearance first, stop and ask when it's missing or reviews are still open, and brief the reviewers with dockets after.
