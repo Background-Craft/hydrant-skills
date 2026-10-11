@@ -43,7 +43,7 @@ Hydrant already hands agents its tools over MCP. Tools describe what an agent *c
 
 - [`hydrant`](./skills/hydrant/SKILL.md): the base every other skill relies on. It also covers promoting between environments: check the clearance first, stop and ask when it's missing or reviews are still open, and brief the reviewers with dockets after.
 - [`hydrant-setup`](./skills/hydrant-setup/SKILL.md): scans your repository, installs the rest without overwriting your own skills, and writes the repository profile.
-- [`capture`](./skills/capture/SKILL.md): files a new issue from a request, idea or bug report, after checking for duplicates.
+- [`capture`](./skills/capture/SKILL.md): files a new issue, or a related set, from a request, idea or bug report, after checking for duplicates. It files buildable work only (no decision issues, no umbrella parents), groups a set by project and milestone, and links every real blocker, so two issues with no blocking path between them can be built in parallel.
 - [`refine`](./skills/refine/SKILL.md): settles scope, acceptance, priority, size, owner, labels and project, and marks the issue Ready only when nothing material is open.
 - [`prep`](./skills/prep/SKILL.md): confirms the assignment, reads the issue and the code it touches, maps each acceptance check to a command from your profile, and records a checkpoint on the issue. Edits nothing.
 - [`go`](./skills/go/SKILL.md): builds the issue on its own branch, runs your profile's checks, preflights the result and hands it to review with a brief for the reviewer. Commits locally; pushes and opens a pull request only when you ask or under a `ship` grant. Never merges.
@@ -274,7 +274,7 @@ Uninstalling removes the extension only; it does not revoke its Hydrant OAuth ac
 | 0.2.0 | `hydrant` 0.1.0 |
 | 0.1.0 | `hydrant` 0.1.0 |
 
-Requires `get_workspace`, `list_issues`, `get_issue`, `list_activity`, `get_dependencies`, `list_relationships`, `create_issue`, `update_issue` and `add_comment`; uses `list_projects`, `get_project`, `get_milestone` and `inspect_project` for project membership, and `update_relationship` for links in `refine`. Treats `batch` and the task-context tools as optional.
+Requires `get_workspace`, `list_issues`, `get_issue`, `list_activity`, `get_dependencies`, `list_relationships`, `create_issue`, `update_issue` and `add_comment`; uses `list_projects`, `get_project`, `get_milestone` and `inspect_project` for project membership, and `update_relationship` for links in `capture` and `refine`. Treats `batch` and the task-context tools as optional.
 
 The server reports its name and version when a client connects. Releases are git tags; see [CHANGELOG.md](./CHANGELOG.md).
 
