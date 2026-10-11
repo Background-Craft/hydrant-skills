@@ -51,7 +51,7 @@ Descriptions and comments are Markdown with real newlines. Keep titles short. Pr
 
 Capture and refinement, in order:
 
-1. `create_issue` with a `requestId` and a title. It also accepts `description`, `parentId` and `properties` atomically, so send what you already know.
+1. `create_issue` with a `requestId` and a title. It also accepts `description`, `parentId` and `properties` atomically, so send what you already know. Send `parentId` only for a parent the user named; group related new issues by project and milestone, not under a new umbrella issue.
 2. `get_issue` to read what the server stored, including its `version`.
 3. `update_issue` with that `version` and a patch built from workspace-described fields, for anything that depends on the read-back. Project or milestone membership uses the revision rule `get_workspace` publishes under `projects.membershipRevision`, built from a fresh `get_project` or `inspect_project` read; send the `inspect_project` snapshot and rationale when the server requires them.
 
