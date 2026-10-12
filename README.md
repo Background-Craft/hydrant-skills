@@ -281,7 +281,7 @@ The server reports its name and version when a client connects. Releases are git
 
 ## Contributing
 
-Issues and pull requests are open. Keep `skills/hydrant/SKILL.md` provider-neutral and short, and run `node scripts/validate-frontmatter.mjs` before pushing. The shared Codex/Claude Code/Cursor plugin ships a copy of `skills/hydrant`, because Codex drops symlinks when it installs a plugin: after editing the skill, run `node scripts/check-plugin.mjs --write`. CI fails when the copy drifts. Workspace policy belongs in your workspace; this file is not the place to legislate it.
+Issues and pull requests are open. Keep `skills/hydrant/SKILL.md` provider-neutral and short, and run `npm ci` then `node scripts/validate-frontmatter.mjs` before pushing. The validator parses frontmatter as real YAML, the way installers do, so quote any `description` that contains `: ` or ` #`. The shared Codex/Claude Code/Cursor plugin ships a copy of `skills/hydrant`, because Codex drops symlinks when it installs a plugin: after editing the skill, run `node scripts/check-plugin.mjs --write`. CI fails when the copy drifts. Workspace policy belongs in your workspace; this file is not the place to legislate it.
 
 ## License
 

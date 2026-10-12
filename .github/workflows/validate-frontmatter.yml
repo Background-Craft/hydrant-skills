@@ -19,8 +19,13 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: "20"
+          cache: npm
+      - name: Install dependencies
+        run: npm ci
       - name: Validate
         run: node scripts/validate-frontmatter.mjs
+      - name: Test the validator
+        run: npm test
       - name: Check the shared plugin
         run: node scripts/check-plugin.mjs
       - name: Check the Gemini extension
