@@ -6,6 +6,7 @@
 
 import { readFile, readdir } from "node:fs/promises";
 import { relative, sep } from "node:path";
+import { parse } from "yaml";
 
 const ROOT = process.cwd();
 const IGNORED_DIRS = new Set([".git", "node_modules"]);
@@ -33,30 +34,29 @@ async function* walk(dir) {
 }
 
 function parseFrontmatter(source, file) {
-  const match = source.match(FRONTMATTER_RE);
+  // Strip a leading byte-order mark, as the skills CLI does before matching.
+  const text = source.charCodeAt(0) === 0xfeff ? source.slice(1) : source;
+  const match = text.match(FRONTMATTER_RE);
   if (!match) {
     return { errors: [`${file}: missing YAML frontmatter (no leading --- block)`] };
   }
-  const block = match[1];
+  // Parse the block as real YAML with strict default options, so anything a
+  // YAML-parsing installer would reject (for example an unquoted ": " inside a
+  // value) fails here too.
+  let data;
+  try {
+    data = parse(match[1]);
+  } catch (err) {
+    return { errors: [`${file}: invalid YAML frontmatter: ${err.message}`] };
+  }
+  if (data === null || typeof data !== "object" || Array.isArray(data)) {
+    return { errors: [`${file}: frontmatter must be a YAML mapping of fields`] };
+  }
   const errors = [];
-  const data = {};
-  for (const rawLine of block.split(/\r?\n/)) {
-    const line = rawLine.trim();
-    if (!line || line.startsWith("#")) continue;
-    const colon = line.indexOf(":");
-    if (colon === -1) {
-      errors.push(`${file}: malformed frontmatter line: "${rawLine}"`);
-      continue;
+  for (const field of ["name", "description"]) {
+    if (data[field] !== undefined && data[field] !== null && typeof data[field] !== "string") {
+      errors.push(`${file}: frontmatter "${field}" must be a string (got ${typeof data[field]})`);
     }
-    const key = line.slice(0, colon).trim();
-    let value = line.slice(colon + 1).trim();
-    if (
-      (value.startsWith('"') && value.endsWith('"')) ||
-      (value.startsWith("'") && value.endsWith("'"))
-    ) {
-      value = value.slice(1, -1);
-    }
-    data[key] = value;
   }
   return { data, errors };
 }
