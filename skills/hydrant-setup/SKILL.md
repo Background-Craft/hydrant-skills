@@ -22,7 +22,7 @@ Setup writes only the profile, the skills the user approved and backups of anyth
 
 Everything in this phase is read-only. Work from the repository root.
 
-The scan reads files and runs only inspection commands: read-only `git` (`rev-parse`, `status`, `symbolic-ref`, `log`, `ls-tree`, `show`), read-only `gh` (`api` GET calls and `repo view`), `ls`, `cat`, `readlink` and `npx skills add <source> --list`. It never runs package scripts, tests, builds, installs, `make`/`just`/`task` targets or anything else the repository defines: in a repository someone has just cloned, that runs its code before they have approved anything.
+The scan reads files and runs only inspection commands: read-only `git` (`rev-parse`, `status`, `symbolic-ref`, `log`, `ls-tree`, `show`, `remote`, `branch`), read-only `gh` (`api` GET calls and `repo view`), `ls`, `cat`, `readlink`, `test -f`/`-d`, text filters such as `grep`, `head` and `tail` on what those print, and `npx skills add <source> --list`. It never runs package scripts, tests, builds, installs, `make`/`just`/`task` targets or anything else the repository defines: in a repository someone has just cloned, that runs its code before they have approved anything.
 
 ```sh
 git rev-parse --show-toplevel
@@ -315,7 +315,7 @@ Hydrant workflow facts for this repository are in `.agents/hydrant-workflow.md`.
 ## Checklist
 
 - Scanned skills, lockfile, instructions, commands, CI, deploy, PR conventions and review bots before writing.
-- The scan ran only inspection commands (read-only `git` and `gh`, `ls`, `cat`, `readlink`, `skills add --list`); no package script, test, build, install or repository task.
+- The scan ran only inspection commands (read-only `git` and `gh`, `ls`, `cat`, `readlink`, `test -f`, text filters, `skills add --list`); no package script, test, build, install or repository task.
 - Pack skills listed from the source with `--list`, not from memory.
 - One plan shown and confirmed before any write.
 - Every install used `-s <name>` and the plan's `-a` agents.
