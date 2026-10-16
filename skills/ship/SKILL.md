@@ -61,7 +61,7 @@ Ship publishes, merges, releases and marks done only under a **ship grant**: the
 
 2. Wait for the answer. Only a clear yes from the user, given after the text was shown and about this issue, is a grant. Anything else, including silence, a non-interactive run with no answer, or an answer about a different issue, means: no grant. Stop here and report "no grant: nothing published". Make no Hydrant or GitHub write.
 3. A grant recorded on the issue in an earlier session is evidence of a past grant, not a new one. Ask again. A grant covers exactly one issue: a project, milestone, "everything assigned to you" or a list of issues is never a grant.
-4. Record the grant on the issue, as the first writes of the run, and read each back. Then record any task-context receipt from Phase 1.
+4. Record the grant on the issue, as the first writes of the run, and read each back (the `create_grant` receipt is the grant's read-back; `get_issue` or `list_activity` reads back the comment). Then record any task-context receipt from Phase 1.
 
    First record it as grant data with `create_grant`:
 
