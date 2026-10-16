@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- Ship grants as Hydrant grant data: `ship` records the confirmed grant with `create_grant` before its grant comment, for its own connection (no `agentId`) and this issue, with actions `read`, `write`, `open_pull_request` and `merge`, `release` only when the profile has release steps and never `sign_off`, the confirmed grant text verbatim as `note` and the reserved list as `excludes`. The grant comment names the returned grant id. On a server without `create_grant`, the comment alone records the grant and says so. Hydrant #708.
+
 ## 0.4.0 — 2026-10-11
 
 - Capture files buildable work only. `capture` never files an issue whose purpose is to decide something and never applies a decision label to a new issue; an open choice is asked in the session or written under "Open questions" in the delivery issue with a proposed default. It never creates an umbrella issue to hold sub-issues, sets a parent only when you name one, and groups a set of issues by project and milestone. It links every real prerequisite and every build collision (two migrations, conflicting rewrites of the same files) as blocked-by among the new issues and to existing open ones, reads the links back and ends with an order table (issue, blocked by, can start now): two open issues with no blocking path between them can be built in parallel. `refine`'s label and relationship rules agree (no decision label, no new umbrella parent, a too-big issue is split into separate linked issues), and the `hydrant` skill sends `parentId` only for a parent you named. Both skills add subagent guidance: cheap read-only sweeps on the cheapest capable model, named explicitly so an expensive session's model is not inherited (in Claude Code, for example, Haiku 5.5 for sweeps and Opus 5.5 for the rest), with every Hydrant write kept in the main session. Hydrant #657.
