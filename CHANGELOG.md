@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- `hydrant-setup`'s scan runs only inspection commands: read-only `git` (`rev-parse`, `status`, `symbolic-ref`, `log`, `ls-tree`, `show`), read-only `gh` (`api` GET calls and `repo view`), `ls`, `cat`, `readlink` and `npx skills add <source> --list`. It never runs package scripts, tests, builds, installs, `make`/`just`/`task` targets or anything else the repository defines, because that runs a freshly cloned repository's code before anyone has approved it. Commands found in files are still recorded with their source, never run to prove they work. The Checklist repeats the rule. Hydrant #716.
 - Ship grants as Hydrant grant data: `ship` records the confirmed grant with `create_grant` before its grant comment, for its own connection (no `agentId`) and this issue, with actions `read`, `write`, `open_pull_request` and `merge`, `release` only when the profile has release steps and never `sign_off`, the confirmed grant text verbatim as `note` and the reserved list as `excludes`. The grant comment names the returned grant id. On a server without `create_grant`, the comment alone records the grant and says so. Hydrant #708.
 
 ## 0.4.0 — 2026-10-11
