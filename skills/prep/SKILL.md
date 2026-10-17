@@ -8,7 +8,7 @@ license: MIT
 
 Turn a refined issue into a plan `go` can start from without rediscovering anything. Prep reads the repository and Hydrant, and writes one comment on the issue, plus the task-context receipt the `hydrant` skill asks for whenever `get_task_context` returns delivery identifiers, even for an empty manifest. It edits no files, creates no branch and changes no issue field or status.
 
-This skill relies on the [`hydrant`](../hydrant/SKILL.md) skill for how to read, write and report over the Hydrant MCP server: `get_workspace` first, request UUIDs, versions, conflicts, read-back and access failures. Follow it for every call below.
+This skill relies on the [`hydrant`](../hydrant/SKILL.md) skill for how to read, write and report over the Hydrant MCP server: `get_workspace_identity` first, `get_workspace` for issue configuration, request UUIDs, versions, conflicts, read-back and access failures. Follow it for every call below.
 
 | What | Where it comes from |
 | --- | --- |

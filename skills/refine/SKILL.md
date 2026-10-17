@@ -8,7 +8,7 @@ license: MIT
 
 Take one Hydrant issue from "someone wants this" to "an agent or person can build it without this conversation". Refine writes to Hydrant only; it does not start the work.
 
-This skill relies on the [`hydrant`](../hydrant/SKILL.md) skill for how to read, write and report over the Hydrant MCP server: `get_workspace` first, request UUIDs, versions, conflicts, read-back and access failures. Follow it for every call below.
+This skill relies on the [`hydrant`](../hydrant/SKILL.md) skill for how to read, write and report over the Hydrant MCP server: `get_workspace_identity` first, `get_workspace` for issue configuration, request UUIDs, versions, conflicts, read-back and access failures. Follow it for every call below.
 
 | What | Where it comes from |
 | --- | --- |

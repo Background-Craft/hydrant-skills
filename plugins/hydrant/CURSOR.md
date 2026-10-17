@@ -25,7 +25,7 @@ Open **Customize** in Cursor and search for **Hydrant**. If it has not appeared,
 
 Open **Configure Hydrant**. If you already configured the server manually, Cursor can show both **User** and **Plugin hydrant** sources. In the observed test, User remained on and Plugin remained off. A Connected badge in that state proves the existing connection, not a fresh plugin sign-in. Keep your existing configuration unless you deliberately choose to replace it.
 
-Cursor can stay signed into your usual Cursor account; the GitHub account below is for Hydrant. For a fresh connection, use Cursor's authentication control. Sign in to Hydrant with GitHub and approve only the intended workspace and access. No API key belongs in this package. Ask Cursor to call `get_workspace` and report the name and UUID before requesting writes. Keep client approval prompts enabled.
+Cursor can stay signed into your usual Cursor account; the GitHub account below is for Hydrant. For a fresh connection, use Cursor's authentication control. Sign in to Hydrant with GitHub and approve only the intended workspace and access. No API key belongs in this package. Ask Cursor to call `get_workspace_identity` with `{}` and report the name and UUID before requesting writes. Keep client approval prompts enabled.
 
 The desktop callback and token exchange were verified against Hydrant v2026.09.27.5. If authentication fails, retain the error and use [Hydrant's troubleshooting guide](https://hydrant.dev/help/agents/troubleshooting); do not disable redirect checks or paste a secret into the plugin. Revoke a wrong-workspace connection in **Hydrant → Settings → Agents → Access**, then reconnect to the correct workspace.
 

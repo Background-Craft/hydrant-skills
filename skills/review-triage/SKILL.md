@@ -8,7 +8,7 @@ license: MIT
 
 Take one open pull request from "feedback is arriving" to "every comment has an answer". Works the same with CodeRabbit, Copilot, Greptile, any other bot, or no bot at all. With no bot, only people's comments are triaged.
 
-This skill relies on the [`hydrant`](../hydrant/SKILL.md) skill for how to read, write and report over the Hydrant MCP server: `get_workspace` first, request UUIDs, read-back and access failures. Follow it for every Hydrant call below.
+This skill relies on the [`hydrant`](../hydrant/SKILL.md) skill for how to read, write and report over the Hydrant MCP server: `get_workspace_identity` first, request UUIDs, read-back and access failures. Follow it for every Hydrant call below.
 
 | What | Where it comes from |
 | --- | --- |
