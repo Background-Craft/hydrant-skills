@@ -62,7 +62,7 @@ Drop the `-a` for the agent you don't use. Then ask your agent to run `hydrant-s
 
 Keep `-s` and at least one `-a`. `-s` installs setup on its own: a plain `npx skills add Background-Craft/hydrant-skills -y` overwrites any skill of yours with the same name, such as your own `refine`, without asking. `-a` keeps the CLI to those agents' folders. When an agent runs the command without it, the CLI installs for every agent it supports, with no prompt, and replaces any same-named skill in their folders. Setup pins `-a` the same way for every skill it installs.
 
-**Codex:** its default `workspace-write` sandbox protects `.agents/`, so the install fails there. Run the command from your own terminal. When setup installs skills and writes `.agents/hydrant-workflow.md`, approve the escalation Codex asks for. If you don't, setup prints the commands and the profile for you to run and save yourself.
+**Codex:** its default `workspace-write` sandbox protects `.agents/`, so the install fails there. Run the command from your own terminal. When setup installs skills and writes `.agents/hydrant-workflow.md`, approve the escalation Codex asks for. If you don't, setup prints the commands and the profile for you to run and save yourself. Codex also runs commands without network by default, so setup can't fetch the pack's skill list; it plans from the list it ships with and says so.
 
 Only want the base skill? `npx skills add Background-Craft/hydrant-skills -s hydrant`.
 
