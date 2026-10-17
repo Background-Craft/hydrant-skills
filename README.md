@@ -267,6 +267,7 @@ Uninstalling removes the extension only; it does not revoke its Hydrant OAuth ac
 
 | Skill | Hydrant MCP server |
 |---|---|
+| 0.4.1 | `hydrant` 0.1.0, individually named operations |
 | 0.4.0 | `hydrant` 0.1.0 |
 | 0.3.3 | `hydrant` 0.1.0 |
 | 0.3.2 | `hydrant` 0.1.0 |
@@ -275,7 +276,7 @@ Uninstalling removes the extension only; it does not revoke its Hydrant OAuth ac
 | 0.2.0 | `hydrant` 0.1.0 |
 | 0.1.0 | `hydrant` 0.1.0 |
 
-Requires `get_workspace`, `list_issues`, `get_issue`, `list_activity`, `get_dependencies`, `list_relationships`, `create_issue`, `update_issue` and `add_comment`; uses `list_projects`, `get_project`, `get_milestone` and `inspect_project` for project membership, and `update_relationship` for links in `capture` and `refine`. Treats `batch`, the task-context tools and `create_grant` (in `ship`) as optional.
+Requires `get_workspace`, `list_issues`, `get_issue`, `list_activity`, `get_dependencies`, `list_relationships`, `create_issue`, `update_issue` and `add_comment`; uses `list_projects`, `get_project`, `get_milestone` and `inspect_project` for project membership, and the individually named relationship tools for links in `capture` and `refine`. The base skill uses `create_docket` and `add_docket_issues` for review groups. The task-context tools and `create_grant` (in `ship`) remain optional. The canonical server exposes individually named operations; migrate older action-dispatch calls to their matching tool, use separate calls for multiple writes, and refresh client discovery. Ordinary `update_issue` patches exclude trash, ordering, approval and review decisions.
 
 The server reports its name and version when a client connects. Releases are git tags; see [CHANGELOG.md](./CHANGELOG.md).
 

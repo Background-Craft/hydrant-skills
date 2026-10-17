@@ -1,5 +1,5 @@
 interface:
-  display_name: "Hydrant"
+  display_name: "Hydrant Issue Management"
   short_description: "Manage issues in your Hydrant workspace"
 
 dependencies:
