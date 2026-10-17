@@ -38,7 +38,7 @@ ls -la .agents/skills .claude/skills 2>/dev/null
 cat skills-lock.json 2>/dev/null
 ```
 
-For every entry record its name, path and kind: a directory, or a symlink with its target (`readlink`). A `.claude/skills/<name>` symlink into `.agents/skills/<name>` is one skill in two places, not two skills. So is every skill when `.claude` or `.claude/skills` is itself a symlink into `.agents` (check with `readlink .claude .claude/skills`). From `skills-lock.json`, note each skill's `source` and `sourceType`. A skill whose lockfile source is `Background-Craft/hydrant-skills` but whose name the pack's `--list` (below) no longer shows is a stale earlier install, such as the April 2026 `align`, `nail` or `yeet`; report it as such. A same-named skill the pack does list (for example an April 2026 `refine`) is reported as a clash in Phase 2 like any other.
+For every entry record its name, path and kind: a directory, or a symlink with its target (`readlink`). A `.claude/skills/<name>` symlink into `.agents/skills/<name>` is one skill in two places, not two skills. So is every skill when `.claude` or `.claude/skills` is itself a symlink into `.agents` (check with `readlink .claude .claude/skills`). From `skills-lock.json`, note each skill's `source` and `sourceType`. A skill whose lockfile source is `Background-Craft/hydrant-skills` but whose name the pack's list (below) no longer shows is a stale earlier install, such as the April 2026 `align`, `nail` or `yeet`; report it as such. A same-named skill the pack does list (for example an April 2026 `refine`) is reported as a clash in Phase 2 like any other.
 
 ### Older Hydrant guidance
 
@@ -82,7 +82,27 @@ Find the source this skill was installed from, so a trial from a local clone lis
 npx skills add <source> --list
 ```
 
-The installable set is every listed skill except `hydrant-setup`. Do not use a list from memory or from this file; the pack grows.
+The installable set is every listed skill except `hydrant-setup`. Do not use a list from memory; the pack grows.
+
+`--list` needs the network for a GitHub source, and some clients run commands without it (Codex does by default, in `read-only` and `workspace-write`). If `--list` fails, use the shipped pack list below instead and keep going: clash and stale-install checks use whichever list you used. The plan then says, in one line, where the list came from and why, quoting the error. Name the network as the reason only when the error is a DNS or connection failure (`ENOTFOUND`, `EAI_AGAIN`, `ECONNREFUSED`, `ECONNRESET`, `ETIMEDOUT` and similar); for any other error, quote it without blaming the network. For example:
+
+```text
+Pack list  shipped with hydrant-setup (lockfile hash f32100d3); may be older than the latest pack (--list failed: getaddrinfo ENOTFOUND registry.npmjs.org, no network)
+```
+
+The lockfile hash is the first 8 characters of the `hydrant-setup` entry's `computedHash` in `skills-lock.json` (`unknown` when there is none). A plan built from the shipped list is complete: present it for approval as usual, never as unverified or pending. Installs without the network fail too; Phase 3's on-disk check already marks them failed and prints the commands for the user's own terminal.
+
+### Shipped pack list
+
+Every skill in the pack except `hydrant-setup`, as of this copy. The pack's CI fails when this list and the pack's `skills/` folders disagree.
+
+- `capture`
+- `go`
+- `hydrant`
+- `prep`
+- `refine`
+- `review-triage`
+- `ship`
 
 ### Repository facts
 
@@ -316,7 +336,7 @@ Hydrant workflow facts for this repository are in `.agents/hydrant-workflow.md`.
 
 - Scanned skills, lockfile, instructions, commands, CI, deploy, PR conventions and review bots before writing.
 - The scan ran only inspection commands (read-only `git` and `gh`, `ls`, `cat`, `readlink`, `test -f`, text filters, `skills add --list`); no package script, test, build, install or repository task.
-- Pack skills listed from the source with `--list`, not from memory.
+- Pack skills listed from the source with `--list`, or, when that failed, from the shipped pack list with the plan saying so and why; never from memory.
 - One plan shown and confirmed before any write.
 - Every install used `-s <name>` and the plan's `-a` agents.
 - Every "installed" skill was checked on disk; the first failure stopped the installs and printed the user's commands.
