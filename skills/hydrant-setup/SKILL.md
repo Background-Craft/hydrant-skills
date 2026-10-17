@@ -84,13 +84,13 @@ npx skills add <source> --list
 
 The installable set is every listed skill except `hydrant-setup`. Do not use a list from memory; the pack grows.
 
-`--list` needs the network for a GitHub source, and some clients run commands without it (Codex does by default, in `read-only` and `workspace-write`). If `--list` fails, use the shipped pack list below instead and keep going: clash and stale-install checks use whichever list you used. The plan then says, in one line, where the list came from and why, quoting the error, for example:
+`--list` needs the network for a GitHub source, and some clients run commands without it (Codex does by default, in `read-only` and `workspace-write`). If `--list` fails, use the shipped pack list below instead and keep going: clash and stale-install checks use whichever list you used. The plan then says, in one line, where the list came from and why, quoting the error. Name the network as the reason only when the error is a DNS or connection failure (`ENOTFOUND`, `EAI_AGAIN`, `ECONNREFUSED`, `ECONNRESET`, `ETIMEDOUT` and similar); for any other error, quote it without blaming the network. For example:
 
 ```text
-Pack list  shipped with hydrant-setup f32100d3; may be older than the latest pack (--list failed: getaddrinfo ENOTFOUND registry.npmjs.org, no network)
+Pack list  shipped with hydrant-setup (lockfile hash f32100d3); may be older than the latest pack (--list failed: getaddrinfo ENOTFOUND registry.npmjs.org, no network)
 ```
 
-`f32100d3` is the first 8 characters of the `hydrant-setup` entry's `computedHash` in `skills-lock.json` (`unknown` when there is none). A plan built from the shipped list is complete: present it for approval as usual, never as unverified or pending. Installs without the network fail too; Phase 3's on-disk check already marks them failed and prints the commands for the user's own terminal.
+The lockfile hash is the first 8 characters of the `hydrant-setup` entry's `computedHash` in `skills-lock.json` (`unknown` when there is none). A plan built from the shipped list is complete: present it for approval as usual, never as unverified or pending. Installs without the network fail too; Phase 3's on-disk check already marks them failed and prints the commands for the user's own terminal.
 
 ### Shipped pack list
 
