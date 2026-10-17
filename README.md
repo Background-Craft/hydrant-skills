@@ -267,6 +267,7 @@ Uninstalling removes the extension only; it does not revoke its Hydrant OAuth ac
 
 | Skill | Hydrant MCP server |
 |---|---|
+| 0.4.1 | `hydrant` 0.1.0, individually named operations |
 | 0.4.0 | `hydrant` 0.1.0 |
 | 0.3.3 | `hydrant` 0.1.0 |
 | 0.3.2 | `hydrant` 0.1.0 |
