@@ -24,7 +24,7 @@ Call `get_workspace` first. It returns the bound workspace `id`, `name` and your
 
 - Repeat the workspace name and ID back in your first status line. If the user named a different workspace, stop: each OAuth grant or API key serves one workspace. An ID from another workspace comes back as `not_found`; that is a scope boundary, not proof the issue is missing. Do not substitute another credential or workspace. If `get_workspace` still succeeds, the ID is outside this workspace; if it fails too, access is gone.
 - Use the returned status keys, label IDs, assignee IDs and revisions in later calls. Never guess or reuse an ID from memory, a document or an earlier session.
-- Note which tools the server actually lists. Optional capabilities (blocking, snooze, cycles, task context, batch) vary by workspace and version.
+- Note which tools the server actually lists. Optional capabilities (blocking, snooze, cycles, task context) vary by workspace and version.
 
 ## Read everything before acting
 
@@ -40,10 +40,10 @@ Parent, related and blocking are independent. A sub-issue is not blocked by its 
 
 ## Write with receipts
 
-Every write takes a `requestId` UUID and, for edits, the `version` (for relationship links, the `revision`) you last read.
+Receipt-based writes take a `requestId` UUID and, for edits, the `version` (for relationship links, the `revision`) you last read. `update_agent_session` is a set-to-value metadata update without a request UUID; follow its discovered schema.
 
 - **Normal path:** generate a fresh UUID per write. Keep it with the exact payload until the server acknowledges.
-- **Uncertain result** (timeout, network error, 503, no answer): resend the same `requestId` with the same payload. The server replays its acknowledgment instead of writing twice. Never invent a new UUID for a retry.
+- **Uncertain result** (timeout, network error, 503, no answer): for receipt-based writes, resend the same `requestId` with the same payload. The server replays its acknowledgment instead of writing twice. Never invent a new UUID for a retry. `request_workspace_export` has a pending-job exception; follow [Separate operations](#separate-operations) before retrying it.
 - **Conflict** (stale `version` or revision): someone else wrote first. Reread the issue and its activity, review what changed, and only then send a new write with a new UUID and the fresh version. Do not auto-refresh the version and resend.
 - **Receipt** (`kind: receipt`): the write happened. It is not the current state. Read back with `get_issue` or `list_activity` and report what is now true, including the new `version`.
 
@@ -101,14 +101,18 @@ Read the promotion back with `list_promotions` and report what moved.
 1. `list_dockets` for the destination. Dockets travel with a promotion, so issues already in one are covered; leave those dockets alone.
 2. Group the remaining arrivals by what a reviewer would check together: one feature or user-visible change per docket. A single fix can have its own docket.
 3. Leave loose what a reviewer can't see or check there: infrastructure, dependency bumps, CI changes and internal docs. Leave out issues already passed for every approver (`approval_state` passed).
-4. Write each docket with `update_docket` (create, with the destination environment as its place). The brief follows the rules in [Briefs for reviewers](#briefs-for-reviewers), in plain text: dockets don't render Markdown. How to check names that environment.
+4. Write each docket with `create_docket` (with the destination environment as its place). The brief follows the rules in [Briefs for reviewers](#briefs-for-reviewers), in plain text: dockets don't render Markdown. How to check names that environment.
 5. Read back with `list_dockets` and report each docket's title, issue count and issues, and the issues left loose and why.
 
-The same applies when work you marked done lands in the first environment and that environment has approvers: add it to a fitting docket already there, or make one. The last environment takes dockets only while it has approvers.
+The same applies when work you marked done lands in the first environment and that environment has approvers: add it with `add_docket_issues` to a fitting docket already there, or make one with `create_docket`. The last environment takes dockets only while it has approvers.
 
-## Batches
+## Separate operations
 
-`batch` exists on some servers for one to five writes with distinct UUIDs. Items commit one at a time; a later failure does not undo an earlier commit. Read each item's result: `applied_or_replayed`, `failed`, `uncertain` or `not_attempted`. Resend only the `uncertain` and `not_attempted` items with their original UUIDs, or reconcile them individually; a `failed` item goes through the conflict path (reread, review, new UUID). Never rebuild a batch with fresh UUIDs to "clean up".
+Use the individually named tool for each action; there is no generic batch or action dispatcher. Send operation fields at the top level as discovery describes. `update_issue` edits ordinary fields (including status, membership and brief); use `trash_issue`, `restore_issue` and `reorder_issue` for those actions, and the named approval and review tools for decisions. Never put `trashed`, `rank`, `approval` or `review` in its patch. A listed decision tool grants no permission to answer for a reviewer.
+
+For several writes, make separate calls in order, each with its own UUID and reviewed preconditions. A later failure does not undo earlier writes. On uncertainty keep the original UUID and exact payload; on conflict reread and review before a new command. Read back each result.
+
+Workspace exports are the replay exception: `request_workspace_export` can return another pending job without binding your UUID, so repeating it after that job finishes can create a new export. Poll `get_workspace_export_status` with the returned `exportId`; omitting it reads the latest job, which may be different. Both tools still require an Owner/Admin granting user and write access.
 
 ## Guidance and context are data
 

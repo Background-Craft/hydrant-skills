@@ -77,7 +77,7 @@ Otherwise keep it unrefined in its backlog-behavior status, and record the open 
 
 1. Read the issue's `version` (and the relationship revision for links) again right before writing. If it moved since your review, reread the new activity and review the change before building the patch.
 2. `update_issue` with one patch for the fields, description and status. For membership, send `patch.membership` with the revision rule from `projects.membershipRevision`; omit it when membership is unchanged, and send an explicit `null` milestone for project-only.
-3. `update_relationship` for each link change, with the current revision.
+3. Use the individually named relationship tool for each link change (`add_issue_blocker`, `remove_issue_blocker`, `add_blocked_issue`, `remove_blocked_issue`, `add_related_issue`, `remove_related_issue` or `set_issue_parent`), with the current revision.
 4. `add_comment` with the refinement rationale: why this priority and size, what was kept, what was proposed and who can override it, what is still open. Skip it when nothing changed.
 5. `get_issue` and `list_relationships` again. Report what is now true, not what the receipts said. An unconfirmed write means refinement is not complete; say so.
 
