@@ -8,7 +8,7 @@ license: MIT
 
 Turn a request into one well-formed Hydrant issue, or a small linked set, or point to the issue that already covers it. Capture records work; it does not start it.
 
-This skill relies on the [`hydrant`](../hydrant/SKILL.md) skill for how to read, write and report over the Hydrant MCP server: `get_workspace` first, request UUIDs, versions, conflicts, read-back and access failures. Follow it for every call below.
+This skill relies on the [`hydrant`](../hydrant/SKILL.md) skill for how to read, write and report over the Hydrant MCP server: `get_workspace_identity` first, `get_workspace` for issue configuration, request UUIDs, versions, conflicts, read-back and access failures. Follow it for every call below.
 
 | What | Where it comes from |
 | --- | --- |

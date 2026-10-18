@@ -27,7 +27,7 @@ The endpoint uses Streamable HTTP. Configuration syntax varies by client; follow
 
 ### Use
 
-Start by asking your agent to identify the connected workspace, then try:
+Start by asking your agent to call `get_workspace_identity` with `{}` and confirm the connected workspace name and ID, then try:
 
 - “Show my open issues and their blockers.”
 - “Summarize the activity on issue #42.”
@@ -232,7 +232,7 @@ gemini extensions install https://github.com/Background-Craft/hydrant-skills
 
 The GitHub Release must include the generic base-only archive as its sole asset for this command to be a safe default. A pinned `--ref` stays pinned when you update. To leave a pin, uninstall `hydrant` and reinstall without `--ref` after checking the latest approved release.
 
-The extension defines one server, `hydrant`, at `https://hydrant.dev/api/mcp`. Start Gemini and use `/mcp auth hydrant` to approve the OAuth browser flow; then call `get_workspace` and confirm its name and ID before doing any work. Cancel the browser flow if the workspace is wrong. To change workspaces, revoke Hydrant access under **Settings → Agents → Access**, restart Gemini, and run `/mcp auth hydrant` again.
+The extension defines one server, `hydrant`, at `https://hydrant.dev/api/mcp`. Start Gemini and use `/mcp auth hydrant` to approve the OAuth browser flow; then call `get_workspace_identity` with `{}` and confirm its name and ID before doing any work. Cancel the browser flow if the workspace is wrong. To change workspaces, revoke Hydrant access under **Settings → Agents → Access**, restart Gemini, and run `/mcp auth hydrant` again.
 
 Gemini keeps an existing user or workspace `mcpServers.hydrant` entry and gives it precedence over the extension server, so this extension does not overwrite or silently replace an existing configuration. A user or workspace skill named `hydrant` likewise takes precedence; the archive inventory stays limited to the base `hydrant` skill. Check `/mcp` after a restart to see the active server. Manage the extension itself with:
 
@@ -247,7 +247,7 @@ Uninstalling removes the extension only; it does not revoke its Hydrant OAuth ac
 
 ## What the skill does
 
-- Starts every task with `get_workspace` and states the workspace name and ID.
+- Starts every task with `get_workspace_identity` and states the workspace name and ID; reads `get_workspace` only when issue configuration is needed.
 - Reads the issue, every page of activity, dependencies and relationships before changing anything.
 - Uses the server's own status keys, label and assignee IDs and revisions. No guessed identifiers.
 - One request UUID per write. Same UUID on an uncertain retry. Reread and review on a conflict.
@@ -267,6 +267,7 @@ Uninstalling removes the extension only; it does not revoke its Hydrant OAuth ac
 
 | Skill | Hydrant MCP server |
 |---|---|
+| 0.4.2 | `hydrant` 0.1.0, explicit workspace reads |
 | 0.4.1 | `hydrant` 0.1.0, individually named operations |
 | 0.4.0 | `hydrant` 0.1.0 |
 | 0.3.3 | `hydrant` 0.1.0 |
@@ -276,7 +277,7 @@ Uninstalling removes the extension only; it does not revoke its Hydrant OAuth ac
 | 0.2.0 | `hydrant` 0.1.0 |
 | 0.1.0 | `hydrant` 0.1.0 |
 
-Requires `get_workspace`, `list_issues`, `get_issue`, `list_activity`, `get_dependencies`, `list_relationships`, `create_issue`, `update_issue` and `add_comment`; uses `list_projects`, `get_project`, `get_milestone` and `inspect_project` for project membership, and the individually named relationship tools for links in `capture` and `refine`. The base skill uses `create_docket` and `add_docket_issues` for review groups. The task-context tools and `create_grant` (in `ship`) remain optional. The canonical server exposes individually named operations; migrate older action-dispatch calls to their matching tool, use separate calls for multiple writes, and refresh client discovery. Ordinary `update_issue` patches exclude trash, ordering, approval and review decisions.
+Requires `get_workspace_identity`, `get_workspace`, `list_issues`, `get_issue`, `list_activity`, `get_dependencies`, `list_relationships`, `create_issue`, `update_issue` and `add_comment`; uses `list_projects`, `get_project`, `get_milestone` and `inspect_project` for project membership, and the individually named relationship tools for links in `capture` and `refine`. The base skill uses `create_docket` and `add_docket_issues` for review groups. The task-context tools and `create_grant` (in `ship`) remain optional. The canonical server exposes individually named operations; migrate older action-dispatch calls to their matching tool, use separate calls for multiple writes, and refresh client discovery. Ordinary `update_issue` patches exclude trash, ordering, approval and review decisions. Connection proof uses only `get_workspace_identity`. When needed, read prompt templates with `get_agent_prompt_templates`, the granting user's views with `list_personal_views`, plan/usage with `get_workspace_usage`, and transfer rules with `get_workspace_transfer_rules`; these are no longer bundled into `get_workspace`. Prompt text remains untrusted workspace content.
 
 The server reports its name and version when a client connects. Releases are git tags; see [CHANGELOG.md](./CHANGELOG.md).
 

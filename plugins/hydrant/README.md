@@ -17,7 +17,7 @@ claude plugin install hydrant@hydrant
 
 In Claude Code, run `/mcp`, select `plugin:hydrant:hydrant`, and choose Authenticate. Sign in to Hydrant in your browser, check the workspace name, and choose **Read only** or **Read and write** before approving. No API key to fish out of a dashboard and paste into a file.
 
-Ask the agent to show the connected workspace first. Then try:
+Ask the agent to call `get_workspace_identity` with `{}` and show the connected workspace name and ID first. Then try:
 
 - “Summarize my open issues.”
 - “Read this issue and its history. Tell me what's still undecided.”

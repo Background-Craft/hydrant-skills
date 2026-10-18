@@ -37,9 +37,9 @@ Keep tool approvals on. A workspace grant sets the ceiling; it does not tell you
 
 Ask Cline:
 
-> Use Hydrant's get_workspace tool and tell me which workspace is connected. Then list its open issues. Do not change anything.
+> Use Hydrant's get_workspace_identity tool and tell me which workspace is connected. Then list its open issues. Do not change anything.
 
-Check the returned workspace before continuing. `get_workspace` takes `{}`. For the next call, `list_issues` accepts `{"filters":{"view":"all"},"display":{"completed":false,"direction":"asc","group":"none","order":"updated","subgroup":"none"}}` to exclude completed and canceled issues. An empty result is fine in an empty workspace; an authentication error is not a successful connection.
+Check the returned workspace before continuing. `get_workspace_identity` takes `{}`. For the next call, `list_issues` accepts `{"filters":{"view":"all"},"display":{"completed":false,"direction":"asc","group":"none","order":"updated","subgroup":"none"}}` to exclude completed and canceled issues. An empty result is fine in an empty workspace; an authentication error is not a successful connection.
 
 ## Disconnect or change workspaces
 
