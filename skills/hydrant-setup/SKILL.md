@@ -22,7 +22,7 @@ Setup writes only the profile, the skills the user approved and backups of anyth
 
 Everything in this phase is read-only. Work from the repository root.
 
-The scan reads files and runs only inspection commands: read-only `git` (`rev-parse`, `status`, `symbolic-ref`, `log`, `ls-tree`, `show`, `remote`, `branch`), read-only `gh` (`api` GET calls and `repo view`), `ls`, `cat`, `readlink`, `test -f`/`-d`, text filters such as `grep`, `head` and `tail` on what those print, and `npx skills add <source> --list` (or its isolated form, below). It never runs package scripts, tests, builds, installs, `make`/`just`/`task` targets or anything else the repository defines: in a repository someone has just cloned, that runs its code before they have approved anything.
+The scan reads files and runs only inspection commands: read-only `git` (`rev-parse`, `status`, `symbolic-ref`, `log`, `ls-tree`, `show`, `remote`, `branch`), read-only `gh` (`api` GET calls and `repo view`), `ls`, `cat`, `readlink`, `test -f`/`-d`, text filters such as `grep`, `head` and `tail` on what those print, and `npx skills add <source> --list` (or its isolated form, below, which only creates an empty temporary folder outside the repository for `npx` to put the skills CLI in). It never runs package scripts, tests, builds, installs, `make`/`just`/`task` targets or anything else the repository defines: in a repository someone has just cloned, that runs its code before they have approved anything.
 
 ```sh
 git rev-parse --show-toplevel
@@ -90,24 +90,25 @@ The installable set is every listed skill except `hydrant-setup`. Do not use a l
 Pack list  shipped with hydrant-setup (lockfile hash f32100d3); may be older than the latest pack (--list failed: getaddrinfo ENOTFOUND registry.npmjs.org, no network)
 ```
 
-Before falling back for an npm config error, try the isolated form once (next section).
+Before falling back for an npm config error, try the isolated form once per command (next section).
 
 The lockfile hash is the first 8 characters of the `hydrant-setup` entry's `computedHash` in `skills-lock.json` (`unknown` when there is none). A plan built from the shipped list is complete: present it for approval as usual, never as unverified or pending. Installs without the network fail too; Phase 3's on-disk check already marks them failed and prints the commands for the user's own terminal.
 
 ### When npx trips over package.json
 
-`npx` reads the repository root's `package.json` before the skills CLI starts. An `overrides` entry that conflicts with a direct dependency makes every `npx skills` command fail with `npm error code EOVERRIDE`, and other npm config errors such as `ERESOLVE` do the same. When an `npx skills` command fails with `EOVERRIDE`, `ERESOLVE` or another npm error about the project's dependencies (not a DNS or connection failure, not a denial), rerun it once from an empty prefix:
+`npx` reads the repository root's `package.json` before the skills CLI starts. An `overrides` entry that conflicts with a direct dependency makes every `npx skills` command fail with `npm error code EOVERRIDE`, and other npm config errors such as `ERESOLVE` do the same. When an `npx skills` command fails with `EOVERRIDE`, `ERESOLVE` or a similar npm config error about the project's dependencies, rerun it once from an empty prefix. Not for a DNS or connection failure, not for `EACCES`, `EPERM` or a registry auth error (401 or 403), and not when your client denied the command:
 
 ```sh
 npx --yes --prefix "$(mktemp -d)" skills add <source> --list
 ```
 
-The prefix only changes where `npx` puts the skills CLI. The command still runs from the repository root and installs there. If the rerun works, use the isolated form for every later `npx skills` command in this run, including installs and every command you print for the user. If it fails too, go on with its error as if the plain command had failed (for `--list`, the shipped list below). Rerun once, never for a network error, and never switch package managers on your own.
+The prefix only changes where `npx` puts the skills CLI. The command still runs from the repository root and installs there. Once the plain form has failed with an npm config error, the isolated form is the installer for the rest of this run, even when its rerun fails for another reason (no network, for example): use it for every later `npx skills` command, including installs and every command you print for the user. When the rerun fails, go on with its error as if the plain command had failed (for `--list`, the shipped list below). Rerun once per command, and never switch package managers on your own.
 
-The plan's `Installer` line names the form in use, and why when it is the isolated one:
+The plan's `Installer` line names the form in use. For the isolated one it gives the plain form's error, and the rerun's error too when that failed:
 
 ```text
 Installer  npx --yes --prefix "$(mktemp -d)" skills (plain npx failed: npm error code EOVERRIDE)
+Installer  npx --yes --prefix "$(mktemp -d)" skills (plain npx failed: npm error code EOVERRIDE; isolated rerun failed: getaddrinfo ENOTFOUND registry.npmjs.org)
 ```
 
 ### Shipped pack list
@@ -182,7 +183,7 @@ One skill per command, never the whole source:
 npx skills add <source> -s <name> -a claude-code -a codex -y
 ```
 
-With the isolated installer in the plan, run `npx --yes --prefix "$(mktemp -d)" skills add <source> -s <name> -a claude-code -a codex -y` instead. If a plain install fails with `EOVERRIDE` or `ERESOLVE`, rerun it once in the isolated form as above and keep that form for the rest of the run. Use the `-a` values from the plan. Never drop `-s` (the CLI would overwrite every same-named skill) or `-a` (it would reach agent folders the scan never looked at).
+With the isolated installer in the plan, run `npx --yes --prefix "$(mktemp -d)" skills add <source> -s <name> -a claude-code -a codex -y` instead. If a plain install fails with `EOVERRIDE`, `ERESOLVE` or a similar npm config error, rerun that command once in the isolated form (once per command, as above) and keep that form for the rest of the run. Use the `-a` values from the plan. Never drop `-s` (the CLI would overwrite every same-named skill) or `-a` (it would reach agent folders the scan never looked at).
 
 ### Check each install on disk
 
@@ -200,7 +201,7 @@ A skill is installed only when every check prints `ok`. If your client denied th
 - Mark that skill **failed**, with the reason (the denial, the error line, or "exit 0 but no files").
 - Stop. Don't run the remaining installs, replaces or backups.
 - Print what is left for the user to run from their own terminal, with `<source>` resolved:
-  - For each `new` skill that isn't installed yet, the same `npx skills add <source> -s <name> -a … -y` line, in the plan's installer form. When the failure was `EOVERRIDE`, `ERESOLVE` or another npm config error, print the isolated form, `npx --yes --prefix "$(mktemp -d)" skills add <source> -s <name> -a … -y`, even if its rerun failed here.
+  - For each `new` skill that isn't installed yet, the same `npx skills add <source> -s <name> -a … -y` line, in the plan's installer form. When the failure was `EOVERRIDE`, `ERESOLVE` or a similar npm config error, print the isolated form, `npx --yes --prefix "$(mktemp -d)" skills add <source> -s <name> -a … -y`, even if its rerun failed here.
   - For each replace not done yet, the backup and `diff` block below, then the `rm -rf` and that install line.
   - Nothing for a kept clash. An install there would overwrite the user's skill.
 - Go on to write the profile, then report.
@@ -357,7 +358,7 @@ Hydrant workflow facts for this repository are in `.agents/hydrant-workflow.md`.
 - The scan ran only inspection commands (read-only `git` and `gh`, `ls`, `cat`, `readlink`, `test -f`, text filters, `skills add --list`); no package script, test, build, install or repository task.
 - Pack skills listed from the source with `--list`, or, when that failed, from the shipped pack list with the plan saying so and why; never from memory.
 - One plan shown and confirmed before any write, with its `Installer` line.
-- An `npx skills` command that failed with `EOVERRIDE`, `ERESOLVE` or another npm config error was rerun once from an isolated prefix; the form that worked was used for every later command, and printed commands use the isolated form.
+- An `npx skills` command that failed with `EOVERRIDE`, `ERESOLVE` or a similar npm config error was rerun once per command from an isolated prefix, and the isolated form was the installer for every later and every printed command.
 - Every install used `-s <name>` and the plan's `-a` agents.
 - Every "installed" skill was checked on disk; the first failure stopped the installs and printed the user's commands.
 - No existing skill overwritten without a named yes and a verified backup.
