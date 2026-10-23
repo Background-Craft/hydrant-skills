@@ -64,6 +64,8 @@ Keep `-s` and at least one `-a`. `-s` installs setup on its own: a plain `npx sk
 
 **Codex:** its default `workspace-write` sandbox protects `.agents/`, so the install fails there. Run the command from your own terminal. When setup installs skills and writes `.agents/hydrant-workflow.md`, approve the escalation Codex asks for. If you don't, setup prints the commands and the profile for you to run and save yourself. Codex also runs commands without network by default, so setup can't fetch the pack's skill list; it plans from the list it ships with and says so.
 
+**`npx` stops with `EOVERRIDE`:** an `overrides` entry in your root `package.json` conflicts with a dependency, and `npx` fails before the skills CLI starts. Run it from an empty prefix; it still installs into this repository: `npx --yes --prefix "$(mktemp -d)" skills add Background-Craft/hydrant-skills -s hydrant-setup -a claude-code -a codex`. `bunx skills add` or `pnpm dlx skills add` with the same arguments also works. The same applies to `ERESOLVE` or a similar npm config error. Setup switches to the isolated form by itself on `EOVERRIDE`, `ERESOLVE` or a similar npm config error and names it in the plan.
+
 Only want the base skill? `npx skills add Background-Craft/hydrant-skills -s hydrant`.
 
 The [skills CLI](https://github.com/vercel-labs/skills) is the whole installer. It detects the agents you have, and writes a skill directory, an optional symlink and a lockfile. Nothing else. No hooks, no shell scripts, no edits to your instructions files.
