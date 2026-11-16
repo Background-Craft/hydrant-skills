@@ -68,6 +68,8 @@ Preflight checks the final state before anyone reviews it. Run it once, after th
 
 "Not shown" is an honest result. Never fill a row with a check you did not run.
 
+**Behavior proof.** When behavior changes, exercise the affected runtime flow with a method recorded in the profile and permitted for this task. For UI changes, observe the running interface and the affected interaction; mocked tests alone do not establish that experience. For a fix, reproduce the failure before the change and repeat the same steps after it when feasible. Record what you actually observed and any limits. Documentation-only changes use documentation checks and realistic workflow scenarios where guidance changes materially; they do not require an application run. If the profile records no suitable method, or permission is missing, report the evidence gap rather than inventing a command or treating this skill as additional testing authority.
+
 **Docs impact.** From the final diff, list user-visible changes: behavior, copy, commands, options, routes, settings, limits, APIs. Search the repository's README, docs folder and help or site content for where they are described. Record one line: `Docs impact: none`, `Docs impact: updated <files>` or `Docs impact: follow-up <what>`. Fix a small contradiction in the same change; a larger rewrite is a proposed follow-up.
 
 **Independent review.** Move the issue to the **first** `review`-behavior status, in the order `get_workspace` lists them, and read it back. Then get one skeptical review from a reviewer that did not write the change:
@@ -88,7 +90,9 @@ Record which reviewer ran, by the subagent's name or type, or the exact second-s
 
 If no independent reviewer can run (no subagent feature and the second session is denied or fails), say so plainly in the evidence and the report. Never present your own review as independent.
 
-**Findings.** Fix every blocker, and each "should fix" you agree with. Record the ones you reject with the reason. Send the fixes back to the same reviewer to check the changed lines and the findings they address; broaden the review only when the fix was a material change. Optional findings do not need another round.
+**Findings.** Give each finding a stable ID and record its severity, fixed / rejected / deferred outcome and supporting evidence. Fix every blocker, and each "should fix" you agree with; retain the reasons for rejected or deferred findings. Authorization, data-safety and concurrency defects are not optional merely because their trigger is uncommon. Send fixes to the same reviewer to check the changed lines and affected findings; broaden review only for a material change. Optional findings do not need another round.
+
+If the same material finding remains unresolved or disputed after two focused repair or reply attempts, stop and present the finding, both positions and the evidence to the user. Do not restart full reviews to seek agreement. Reaching that limit is not approval: record the open finding and the next decision in the handoff.
 
 ## Phase 5: Hand off
 
@@ -109,7 +113,7 @@ git push -u origin <branch>
 gh pr create --base <base> --head <branch> --title "<title>" --body "<body>"
 ```
 
-Follow the profile's **Pull requests** section for the title and body. Never force-push. Add the pull request link to the issue in a comment and read it back. Report `gh pr checks` once. If the profile lists **Review bots**, or people will review the pull request, suggest a feedback-loop skill such as `review-triage` when one is installed.
+Follow the profile's **Pull requests** section for the title and body. Within those conventions, describe the concrete problem, the resulting behavior, then briefly state the verification actually performed and material limits. Lead with the outcome rather than a file or implementation inventory. Never force-push. Add the pull request link to the issue in a comment and read it back. Report `gh pr checks` once. If the profile lists **Review bots**, or people will review the pull request, suggest a feedback-loop skill such as `review-triage` when one is installed.
 
 Never run `gh pr merge`, approve a pull request, dismiss a review or delete a branch. Merging and release belong to the people who accept the work, or to a release skill such as `ship` under a recorded grant.
 

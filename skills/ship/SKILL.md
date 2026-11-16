@@ -105,7 +105,7 @@ git push -u origin <branch>
 gh pr create --base <base> --head <branch> --title "<title>" --body "<body>"
 ```
 
-Follow the profile's **Pull requests** section for the title and body, and link the Hydrant issue in the body. Add the pull request link to the issue in a comment and read it back. When a pull request is already open for the branch, push any new local commits to it. Never force-push.
+Follow the profile's **Pull requests** section for the title and body, and link the Hydrant issue in the body. Within those conventions, explain the concrete problem and resulting behavior before implementation details, then briefly state the verification actually performed and material limits. Add the pull request link to the issue in a comment and read it back. When a pull request is already open for the branch, push any new local commits to it. Never force-push.
 
 ## Phase 5: Feedback
 
